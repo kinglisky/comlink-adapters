@@ -1,0 +1,26 @@
+{
+    "name": "comlink-adapters-rep",
+    "version": "1.0.0",
+    "description": "实现",
+    "main": "index.js",
+    "directories": {
+        "example": "examples"
+    },
+    "dependencies": {
+        "typescript": "^5.0.4"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kinglisky/comlink-adapters.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kinglisky/comlink-adapters/issues"
+    },
+    "homepage": "https://github.com/kinglisky/comlink-adapters#readme"
+}
