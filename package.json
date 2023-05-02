@@ -1,5 +1,5 @@
 {
-    "name": "comlink-adapters-rep",
+    "name": "comlink-adapters-monorepo",
     "version": "1.0.0",
     "description": "实现",
     "main": "index.js",
@@ -10,9 +10,7 @@
         "typescript": "^5.0.4"
     },
     "devDependencies": {},
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
+    "scripts": {},
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kinglisky/comlink-adapters.git"

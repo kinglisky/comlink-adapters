@@ -1,0 +1,13 @@
+{
+    "name": "@examples/counter",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "main": "./index.ts",
+    "module": "./index.ts",
+    "types": "./index.ts",
+    "scripts": {},
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

@@ -1,0 +1,31 @@
+{
+    "name": "comlink-adapters",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/comlink-adapters.umd.cjs",
+    "module": "./dist/comlink-adapters.js",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/comlink-adapters.js",
+            "require": "./dist/comlink-adapters.umd.cjs"
+        }
+    },
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "dev": "tsc && vite build --watch",
+        "build": "tsc && vite build"
+    },
+    "devDependencies": {
+        "@figma/plugin-typings": "^1.63.0",
+        "comlink": "^4.4.1",
+        "electron": "^23.1.1",
+        "typescript": "^5.0.2",
+        "vite": "^4.3.2",
+        "vite-plugin-dts": "^2.3.0"
+    }
+}

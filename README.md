@@ -1,9 +1,11 @@
 # comlink-adapters
 
-实现
+implementation different platforms comlink adapter
 
-- electron
-- figma
-- chrome extends
+-   electron
+-   figma
+-   chrome extension
 
-对应的 comlink 适配器
+## Electron
+
+## Figma
