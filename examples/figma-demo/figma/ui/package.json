@@ -1,0 +1,23 @@
+{
+    "name": "@figma/ui",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "start": "vite",
+        "dev": "tsc && vite build --watch",
+        "build": "tsc && vite build"
+    },
+    "devDependencies": {
+        "@figma/plugin-typings": "^1.63.0",
+        "@types/node": "^18.16.3",
+        "typescript": "^5.0.2",
+        "vite": "^4.3.2",
+        "vite-plugin-singlefile": "^0.13.5"
+    },
+    "dependencies": {
+        "@examples/counter": "workspace:^1.0.0",
+        "comlink": "^4.4.1",
+        "comlink-adapters": "workspace:*"
+    }
+}

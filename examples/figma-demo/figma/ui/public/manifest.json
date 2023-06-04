@@ -1,0 +1,10 @@
+{
+    "name": "vite-figam-demo",
+    "id": "1235418064627905536",
+    "api": "1.0.0",
+    "main": "core.iife.js",
+    "capabilities": [],
+    "enableProposedApi": false,
+    "editorType": ["figma"],
+    "ui": "index.html"
+}
