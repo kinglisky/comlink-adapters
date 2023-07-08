@@ -29,7 +29,7 @@
         "vite-plugin-electron": "^0.11.1"
     },
     "dependencies": {
-        "@examples/counter": "workspace:*",
+        "@examples/test": "workspace:*",
         "comlink": "^4.4.1",
         "comlink-adapters": "workspace:*"
     }

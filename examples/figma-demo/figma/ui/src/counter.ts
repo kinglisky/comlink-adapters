@@ -1,13 +1,13 @@
 import { wrap } from 'comlink';
-import { createFigmaUIEndpoint } from 'comlink-adapters';
+import { figmaUIEndpoint } from 'comlink-adapters';
 
-import type { Counter } from '@examples/counter';
+import type { Counter } from '@examples/test';
 
 export function setupCounter(eles: {
     add: HTMLButtonElement;
     count: HTMLParagraphElement;
 }) {
-    const remoteCounter = wrap<Counter>(createFigmaUIEndpoint());
+    const remoteCounter = wrap<Counter>(figmaUIEndpoint());
     eles.add.addEventListener('click', async () => {
         await remoteCounter.add();
         const value = await remoteCounter.count;

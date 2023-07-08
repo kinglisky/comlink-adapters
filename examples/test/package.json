@@ -1,5 +1,5 @@
 {
-    "name": "@examples/counter",
+    "name": "@examples/test",
     "version": "1.0.0",
     "description": "",
     "type": "module",
@@ -9,5 +9,12 @@
     "scripts": {},
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "chai": "^4.3.7",
+        "comlink": "^4.4.1"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.5"
+    }
 }

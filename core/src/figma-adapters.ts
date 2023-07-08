@@ -7,7 +7,7 @@ import type { Endpoint } from 'comlink';
  * @param options
  * @returns
  */
-export function createFigmaUIEndpoint(options?: { origin?: string }): Endpoint {
+export function figmaUIEndpoint(options?: { origin?: string }): Endpoint {
     const listeners = new WeakMap();
     return {
         postMessage: (message: any, transfer: MessagePort[]) => {
@@ -61,7 +61,7 @@ export function createFigmaUIEndpoint(options?: { origin?: string }): Endpoint {
  * @param options
  * @returns
  */
-export function createFigmaCoreEndpoint(options?: {
+export function figmaCoreEndpoint(options?: {
     origin?: string;
     checkProps?: (props: OnMessageProperties) => boolean | Promise<boolean>;
 }): Endpoint {

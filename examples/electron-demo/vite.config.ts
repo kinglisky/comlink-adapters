@@ -7,6 +7,10 @@ export default defineConfig({
             {
                 // Main-Process entry file of the Electron App.
                 entry: 'electron/main.ts',
+                onstart: (options) => {
+                    // Start Electron App
+                    options.startup(['.', '--inspect=5858']);
+                },
             },
             {
                 entry: 'electron/preload.ts',

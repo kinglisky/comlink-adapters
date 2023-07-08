@@ -97,7 +97,5 @@ function useLoading() {
     appendLoading();
     setTimeout(removeLoading, 4999);
 
-    const counter = await useRendererCounter();
-    // @ts-ignore
-    window.rendererCounter = counter;
+    window.testCounter = await useRendererCounter();
 })();

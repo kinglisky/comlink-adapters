@@ -1,15 +1,16 @@
-import { setupRendererCounter } from './counter';
+import { setupTestCounter } from './test';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="demo">
-    <h1>Renderer Counter</h1>
-    <button id="renderer-counter" type="button"></button>
+    <pre id="message">Test Counter Cases:</pre>
+    <button id="renderer-counter" type="button">TEST Counter</button>
   </div>
 `;
 
-setupRendererCounter(
-    document.querySelector<HTMLButtonElement>('#renderer-counter')!
+setupTestCounter(
+    document.querySelector<HTMLButtonElement>('#renderer-counter')!,
+    document.querySelector<HTMLPreElement>('#message')!
 );
 
 postMessage({ payload: 'removeLoading' }, '*');

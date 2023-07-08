@@ -1,7 +1,6 @@
 import { ipcMain } from 'electron';
-import { expose } from 'comlink';
-import { createMainEndpoint } from 'comlink-adapters';
-import { counter } from '@examples/counter';
+import { electronMainEndpoint } from 'comlink-adapters';
+import { exposeCounter } from '@examples/test';
 
 import type { WebContents, IpcMainEvent } from 'electron';
 
@@ -17,12 +16,12 @@ export const registerMainCounter = () => {
         }
 
         // expose counter
-        expose(
-            counter,
-            createMainEndpoint({
+        exposeCounter(
+            electronMainEndpoint({
                 sender: event.sender,
             })
         );
+
         ackMessage(event.sender);
         senderWeakMap.set(event.sender, true);
     });
