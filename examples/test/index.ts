@@ -1,6 +1,7 @@
 import {
     expose,
     wrap,
+    proxy,
     proxyMarker,
     createEndpoint,
     releaseProxy,
@@ -22,6 +23,11 @@ export class Counter {
 
     subtract() {
         this.count -= 1;
+    }
+
+    use(computer: (count: number) => number) {
+        this.count = computer(this.count);
+        return this.count;
     }
 }
 
@@ -49,14 +55,14 @@ export const wrapCounter = (endpoint: Endpoint) => {
     const remoteContent = wrap<typeof exposeContent>(endpoint);
     const testCases = [
         // {
-        //     message: 'Whether to support GET?',
+        //     message: 'Whether to support GET:',
         //     case: async () => {
         //         const res = await remoteContent.counterInstance.count;
         //         expect(res).to.equal(0);
         //     },
         // },
         // {
-        //     message: 'Whether to support SET?',
+        //     message: 'Whether to support SET:',
         //     case: async () => {
         //         // @ts-ignore
         //         await (remoteContent.counterInstance.count = 1);
@@ -70,7 +76,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
         //     },
         // },
         // {
-        //     message: 'Whether to support APPLY?',
+        //     message: 'Whether to support APPLY:',
         //     case: async () => {
         //         await remoteContent.counterInstance.add();
         //         const v1 = await remoteContent.counterInstance.count;
@@ -81,19 +87,8 @@ export const wrapCounter = (endpoint: Endpoint) => {
         //         expect(v2).to.equal(0);
         //     },
         // },
-        {
-            message: 'Whether to support ENDPOINT?',
-            case: async () => {
-                const port = await remoteContent[createEndpoint]();
-                const newProxy = wrap<typeof exposeContent>(port);
-                console.log('ENDPOINT newProxy', newProxy, port);
-                const newCounter = await new newProxy.counterConstructor();
-                // const value = await newCounter.count;
-                console.log('ENDPOINT newCounter', newCounter);
-            },
-        },
         // {
-        //     message: 'Whether to support CONSTRUCT?',
+        //     message: 'Whether to support CONSTRUCT:',
         //     case: async () => {
         //         const counterInstance =
         //             await new remoteContent.counterConstructor();
@@ -102,8 +97,31 @@ export const wrapCounter = (endpoint: Endpoint) => {
         //         expect(value).to.equal(0);
         //     },
         // },
+        {
+            message: 'Whether to support proxy function:',
+            case: async () => {
+                let v = await remoteContent.counterInstance.use(
+                    proxy((count) => count + 3)
+                );
+
+                console.log('v', v);
+                // const value = await remoteContent.counterInstance.count;
+                // expect(value).to.equal(3);
+            },
+        },
         // {
-        //     message: 'Whether to support RELEASE?',
+        //     message: 'Whether to support ENDPOINT:',
+        //     case: async () => {
+        //         const port = await remoteContent[createEndpoint]();
+        //         const newContent = wrap<typeof exposeContent>(port);
+        //         await newContent.counterInstance.add();
+        //         await newContent.counterInstance.subtract();
+        //         const count = await newContent.counterInstance.count;
+        //         expect(count).to.equal(0);
+        //     },
+        // },
+        // {
+        //     message: 'Whether to support RELEASE:',
         //     case: async () => {
         //         remoteContent[releaseProxy]();
 
@@ -125,10 +143,10 @@ export const wrapCounter = (endpoint: Endpoint) => {
             const msg = await lastCateInfo;
             const res = await item
                 .case()
-                .then(() => true)
+                .then(() => 'ok')
                 .catch((error) => {
                     console.error(item.message, error.message);
-                    return false;
+                    return error.message || '';
                 });
             output.innerHTML = `${msg}\n${item.message} ---> ${res}`;
             return output.innerHTML;
