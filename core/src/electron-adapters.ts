@@ -30,6 +30,7 @@ const rebuildMessagePortValue = <T extends MessagePort | MessagePortMain>(
     // get the original MessagePort from the ports list
     if (data?.value === electronMessagePortMarker) {
         data.value = ports[0];
+        return data;
     }
 
     if (typeof data === 'object') {
@@ -145,8 +146,8 @@ const messagePortTransferHandler: TransferHandler<
 export function electronRendererEndpoint(options?: {
     messageChannel: string;
 }): Endpoint {
-    transferHandlers.set('proxy', proxyTransferHandler);
     transferHandlers.set('messagePort', messagePortTransferHandler);
+    transferHandlers.set('proxy', proxyTransferHandler);
 
     const listeners = new WeakMap();
     const { messageChannel = MESSAGE_CHANNEL } = options || {};
