@@ -25,9 +25,8 @@ export class Counter {
         this.count -= 1;
     }
 
-    use(computer: (count: number) => number) {
-        this.count = computer(this.count);
-        return this.count;
+    use(handler: (count: number) => void) {
+        handler(this.count);
     }
 }
 
@@ -100,13 +99,19 @@ export const wrapCounter = (endpoint: Endpoint) => {
         {
             message: 'Whether to support proxy function:',
             case: async () => {
-                let v = await remoteContent.counterInstance.use(
-                    proxy((count) => count + 3)
+                await remoteContent.counterInstance.add();
+                await remoteContent.counterInstance.use(
+                    proxy((count) => {
+                        expect(count).to.equal(1);
+                    })
                 );
 
-                console.log('v', v);
-                // const value = await remoteContent.counterInstance.count;
-                // expect(value).to.equal(3);
+                await remoteContent.counterInstance.subtract();
+                await remoteContent.counterInstance.use(
+                    proxy((count) => {
+                        expect(count).to.equal(0);
+                    })
+                );
             },
         },
         // {

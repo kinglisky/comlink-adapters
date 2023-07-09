@@ -53,12 +53,9 @@ const isObject = (val: unknown): val is object =>
  */
 const proxyTransferHandler: TransferHandler<object, any> = {
     canHandle: (val): val is ProxyMarked => {
-        console.log('proxyTransferHandler canHandle', val);
         return isObject(val) && (val as ProxyMarked)[proxyMarker];
     },
     serialize(obj) {
-        console.log('proxyTransferHandler serialize', obj, process?.type);
-
         // main process
         if (process?.type === 'browser') {
             const { port1, port2 } = new MessageChannelMain();
@@ -80,7 +77,6 @@ const proxyTransferHandler: TransferHandler<object, any> = {
             port instanceof MessagePort
                 ? port
                 : electronMessagePortMainEndpoint(port as MessagePortMain);
-        console.log('proxyTransferHandler deserialize', { port, endpoint });
 
         return wrap(endpoint);
     },
@@ -88,22 +84,18 @@ const proxyTransferHandler: TransferHandler<object, any> = {
 
 const connectMessagePort = (portA: MessagePort, portB: MessagePortMain) => {
     portA.addEventListener('message', (evt) => {
-        console.log('MessagePort message', evt);
         portB.postMessage(evt.data, []);
     });
 
-    portA.addEventListener('close', (evt) => {
-        console.log('MessagePort close', evt);
+    portA.addEventListener('close', () => {
         portB.close();
     });
 
     portB.addListener('message', (evt) => {
-        console.log('MessagePortMain message', evt);
         portA.postMessage(evt.data, []);
     });
 
     portB.addListener('close', () => {
-        console.log('MessagePortMain close');
         portA.close();
     });
 
@@ -119,7 +111,6 @@ const messagePortTransferHandler: TransferHandler<
     any
 > = {
     canHandle: (val): val is MessagePortMain | MessagePort => {
-        console.log('messagePortTransferHandler canHandle', val);
         return !!(
             val &&
             typeof val === 'object' &&
@@ -128,7 +119,6 @@ const messagePortTransferHandler: TransferHandler<
         );
     },
     serialize(port: MessagePort) {
-        console.log('messagePortTransferHandler serialize', port);
         // In the main process, only MessagePortMain can be passed through postMessage
         // so a new proxy MessagePortMain needs to be created to connect to the original MessagePort
         if (process?.type === 'browser') {
@@ -142,7 +132,6 @@ const messagePortTransferHandler: TransferHandler<
         return [electronMessagePortMarker, [port]];
     },
     deserialize(port: MessagePortMain | MessagePort) {
-        console.log('messagePortTransferHandler deserialize', port);
         port.start();
         return port;
     },
@@ -227,10 +216,6 @@ export function electronMessagePortMainEndpoint(
 
         // transfer is MessagePortMain[]
         postMessage: (message: any, transfer: any[]) => {
-            console.log('electronMessagePortMainEndpoint postMessage', {
-                message,
-                transfer,
-            });
             port.postMessage(message, transfer || []);
         },
 
@@ -238,10 +223,6 @@ export function electronMessagePortMainEndpoint(
             if (eventName !== MESSAGE_NAME) return;
 
             const handler = (evt: MessageEventMain) => {
-                console.log(
-                    'electronMessagePortMainEndpoint addEventListener',
-                    evt
-                );
                 const data = rebuildMessagePortValue<MessagePortMain>(
                     evt.data,
                     evt.ports
@@ -302,11 +283,6 @@ export function electronMainEndpoint(options: {
                 const { ports } = evt;
 
                 const data = rebuildMessagePortValue(args[0], ports);
-
-                console.log('electronMainEndpoint addEventListener', {
-                    data,
-                    ports,
-                });
 
                 if ('handleEvent' in eventHandler) {
                     eventHandler.handleEvent({
