@@ -1,15 +1,14 @@
 import './style.css';
-import { setupCounter } from './counter.ts';
+import { setupTestCounter } from './test.ts';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
-    <h2>core counter</h2>
-    <p id="count"></p>
-    <button id="add">Add</button>
+    <pre id="message">Test Counter Cases:</pre>
+    <button id="test-button" type="button">TEST Counter</button>
   </div>
 `;
 
-setupCounter({
-    add: document.querySelector<HTMLButtonElement>('#add')!,
-    count: document.querySelector<HTMLParagraphElement>('#count')!,
-});
+setupTestCounter(
+    document.querySelector<HTMLButtonElement>('#test-button')!,
+    document.querySelector<HTMLPreElement>('#message')!
+);

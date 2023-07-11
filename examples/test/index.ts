@@ -125,7 +125,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
                 try {
                     await remoteContent.counterInstance.count;
                 } catch (error) {
-                    msg = error.message;
+                    msg = (error && Reflect.get(error, 'message')) || '';
                 }
 
                 expect(msg).to.equal(
