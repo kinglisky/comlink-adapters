@@ -6,7 +6,8 @@ import {
     transferHandlers,
     ProxyMarked,
 } from 'comlink';
-import { MESSAGE_CHANNEL, MESSAGE_NAME } from './constant';
+import { isObject } from './utils';
+import { MESSAGE_CHANNEL, MESSAGE_NAME, MESSAGE_PORT_MARKER } from './constant';
 
 import type { Endpoint, TransferHandler } from 'comlink';
 import type {
@@ -17,8 +18,6 @@ import type {
     MessagePortMain,
 } from 'electron';
 
-const electronMessagePortMarker = '__MESSAGE_PORT_MARKER__';
-
 const rebuildMessagePortValue = <T extends MessagePort | MessagePortMain>(
     data: any,
     ports: Array<T>
@@ -28,14 +27,14 @@ const rebuildMessagePortValue = <T extends MessagePort | MessagePortMain>(
     }
 
     // get the original MessagePort from the ports list
-    if (data?.value === electronMessagePortMarker) {
+    if (data?.value === MESSAGE_PORT_MARKER) {
         data.value = ports[0];
         return data;
     }
 
     if (typeof data === 'object') {
         return JSON.parse(JSON.stringify(data), (_, value) => {
-            if (value && value === electronMessagePortMarker) {
+            if (value && value === MESSAGE_PORT_MARKER) {
                 return ports[0];
             }
             return value;
@@ -44,9 +43,6 @@ const rebuildMessagePortValue = <T extends MessagePort | MessagePortMain>(
 
     return data;
 };
-
-const isObject = (val: unknown): val is object =>
-    (typeof val === 'object' && val !== null) || typeof val === 'function';
 
 /**
  * Internal transfer handle to handle objects marked to proxy.
@@ -61,16 +57,13 @@ const proxyTransferHandler: TransferHandler<object, any> = {
         if (process?.type === 'browser') {
             const { port1, port2 } = new MessageChannelMain();
             expose(obj, electronMessagePortMainEndpoint(port1));
-            return [
-                electronMessagePortMarker,
-                [port2 as unknown as Transferable],
-            ];
+            return [MESSAGE_PORT_MARKER, [port2 as unknown as Transferable]];
         }
 
         // renderer process
         const { port1, port2 } = new MessageChannel();
         expose(obj, port1);
-        return [electronMessagePortMarker, [port2]];
+        return [MESSAGE_PORT_MARKER, [port2]];
     },
     deserialize(port: MessagePortMain | MessagePort) {
         port.start();
@@ -105,7 +98,7 @@ const connectMessagePort = (portA: MessagePort, portB: MessagePortMain) => {
 };
 
 /**
- * Internal transfer handle to handle objects marked to proxy.
+ * MessagePort transfer handle.
  */
 const messagePortTransferHandler: TransferHandler<
     MessagePortMain | MessagePort,
@@ -125,12 +118,9 @@ const messagePortTransferHandler: TransferHandler<
         if (process?.type === 'browser') {
             const { port1, port2 } = new MessageChannelMain();
             connectMessagePort(port, port1);
-            return [
-                electronMessagePortMarker,
-                [port2 as unknown as Transferable],
-            ];
+            return [MESSAGE_PORT_MARKER, [port2 as unknown as Transferable]];
         }
-        return [electronMessagePortMarker, [port]];
+        return [MESSAGE_PORT_MARKER, [port]];
     },
     deserialize(port: MessagePortMain | MessagePort) {
         port.start();

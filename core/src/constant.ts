@@ -1,3 +1,5 @@
-export const MESSAGE_CHANNEL = "__COMLINK_MESSAGE_CHANNEL__";
+export const MESSAGE_CHANNEL = '__COMLINK_MESSAGE_CHANNEL__';
 
-export const MESSAGE_NAME = "message";
+export const MESSAGE_PORT_MARKER = '__COMLINK_MESSAGE_PORT_MARKER__';
+
+export const MESSAGE_NAME = 'message';

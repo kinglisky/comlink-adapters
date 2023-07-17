@@ -1,6 +1,26 @@
+import { proxyMarker, ProxyMarked, transferHandlers } from 'comlink';
+import { isObject } from './utils';
 import { MESSAGE_NAME } from './constant';
 
-import type { Endpoint } from 'comlink';
+import type { Endpoint, TransferHandler } from 'comlink';
+
+/**
+ * Internal transfer handle to handle objects marked to proxy.
+ * https://github.com/GoogleChromeLabs/comlink#transfer-handlers-and-event-listeners
+ */
+export const proxyTransferHandler: TransferHandler<object, any> = {
+    canHandle: (val): val is ProxyMarked => {
+        return isObject(val) && (val as ProxyMarked)[proxyMarker];
+    },
+    serialize() {
+        return [null, []];
+    },
+    deserialize() {
+        return function () {
+            throw new Error('Operation not supported');
+        };
+    },
+};
 
 /**
  * create figma ui endpoint
@@ -8,6 +28,8 @@ import type { Endpoint } from 'comlink';
  * @returns
  */
 export function figmaUIEndpoint(options?: { origin?: string }): Endpoint {
+    transferHandlers.set('proxy', proxyTransferHandler);
+
     const listeners = new WeakMap();
     return {
         postMessage: (message: any, transfer: MessagePort[]) => {
@@ -27,6 +49,7 @@ export function figmaUIEndpoint(options?: { origin?: string }): Endpoint {
 
             const handler = (event: MessageEvent) => {
                 const { ports, data } = event;
+
                 if ('handleEvent' in eventHandler) {
                     eventHandler.handleEvent({
                         data: data.pluginMessage,
@@ -65,10 +88,12 @@ export function figmaCoreEndpoint(options?: {
     origin?: string;
     checkProps?: (props: OnMessageProperties) => boolean | Promise<boolean>;
 }): Endpoint {
+    transferHandlers.set('proxy', proxyTransferHandler);
+
     const listeners = new WeakMap();
     return {
         // not supported transfer
-        postMessage: (message: any) => {
+        postMessage: (message: any, _transfer: MessagePort[]) => {
             figma.ui.postMessage(message, { origin: options?.origin || '*' });
         },
 
