@@ -1,5 +1,5 @@
-import './style.css';
 import { setupTestCounter } from './test.ts';
+import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>

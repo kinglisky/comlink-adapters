@@ -7,11 +7,12 @@ export default defineConfig({
         lib: {
             entry: './src/index.ts',
             name: 'comlink-adapters',
-            formats: ['umd', 'es', 'cjs'],
+            formats: ['es', 'cjs', 'umd'],
         },
         rollupOptions: {
             external: ['electron', 'comlink'],
         },
+        minify: !process.argv.includes('--watch'),
     },
     plugins: [dts()],
 });

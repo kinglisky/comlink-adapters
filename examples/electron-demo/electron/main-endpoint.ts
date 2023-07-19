@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain, MessageChannelMain } from 'electron';
 import { electronMainEndpoint } from 'comlink-adapters';
 import { exposeCounter } from '@examples/test';
 
@@ -18,6 +18,8 @@ export const registerMainCounter = () => {
         // expose counter
         exposeCounter(
             electronMainEndpoint({
+                ipcMain,
+                messageChannelConstructor: MessageChannelMain,
                 sender: event.sender,
             })
         );

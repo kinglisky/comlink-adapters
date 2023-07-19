@@ -6,7 +6,7 @@ export const useRendererCounter = () => {
     return new Promise<(output: HTMLPreElement) => Promise<string>>(
         (resolve) => {
             ipcRenderer.on('init-comlink-endponit:ack', () => {
-                resolve(wrapCounter(electronRendererEndpoint()));
+                resolve(wrapCounter(electronRendererEndpoint({ ipcRenderer })));
             });
             ipcRenderer.postMessage('init-comlink-endponit:syn', null);
         }

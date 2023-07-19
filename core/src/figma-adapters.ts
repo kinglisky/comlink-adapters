@@ -1,6 +1,6 @@
 import { proxyMarker, ProxyMarked, transferHandlers } from 'comlink';
 import { isObject } from './utils';
-import { MESSAGE_NAME } from './constant';
+import { MESSAGE_EVENT_NAME, MESSAGE_EVENT_ERROR } from './constant';
 
 import type { Endpoint, TransferHandler } from 'comlink';
 
@@ -45,7 +45,9 @@ export function figmaUIEndpoint(options?: { origin?: string }): Endpoint {
         },
 
         addEventListener: (eventName, eventHandler) => {
-            if (eventName !== MESSAGE_NAME) return;
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
 
             const handler = (event: MessageEvent) => {
                 const { ports, data } = event;
@@ -63,16 +65,18 @@ export function figmaUIEndpoint(options?: { origin?: string }): Endpoint {
                 }
             };
 
-            globalThis.addEventListener(MESSAGE_NAME, handler);
+            globalThis.addEventListener(MESSAGE_EVENT_NAME, handler);
             listeners.set(eventHandler, handler);
         },
 
         removeEventListener: (eventName, eventHandler) => {
-            if (eventName !== MESSAGE_NAME) return;
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
 
             const handler = listeners.get(eventHandler);
             if (handler) {
-                globalThis.removeEventListener(MESSAGE_NAME, handler);
+                globalThis.removeEventListener(MESSAGE_EVENT_NAME, handler);
                 listeners.delete(eventHandler);
             }
         },
@@ -98,7 +102,9 @@ export function figmaCoreEndpoint(options?: {
         },
 
         addEventListener: (eventName, eventHandler) => {
-            if (eventName !== MESSAGE_NAME) return;
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
 
             const handler = async (data: any, props: OnMessageProperties) => {
                 // check props
@@ -120,16 +126,18 @@ export function figmaCoreEndpoint(options?: {
                 }
             };
 
-            figma.ui.on(MESSAGE_NAME, handler);
+            figma.ui.on(MESSAGE_EVENT_NAME, handler);
             listeners.set(eventHandler, handler);
         },
 
         removeEventListener: (eventName, eventHandler) => {
-            if (eventName !== MESSAGE_NAME) return;
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
 
             const handler = listeners.get(eventHandler);
             if (handler) {
-                figma.ui.off(MESSAGE_NAME, handler);
+                figma.ui.off(MESSAGE_EVENT_NAME, handler);
                 listeners.delete(eventHandler);
             }
         },

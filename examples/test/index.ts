@@ -98,11 +98,17 @@ export const wrapCounter = (endpoint: Endpoint) => {
             message: 'ENDPOINT:',
             case: async () => {
                 const port = await remoteContent[createEndpoint]();
-                const newContent = wrap<typeof exposeContent>(port);
-                await newContent.counterInstance.add();
-                await newContent.counterInstance.subtract();
-                const count = await newContent.counterInstance.count;
-                expect(count).to.equal(0);
+                if (port instanceof MessagePort) {
+                    const newContent = wrap<typeof exposeContent>(port);
+                    await newContent.counterInstance.add();
+                    await newContent.counterInstance.subtract();
+                    const count = await newContent.counterInstance.count;
+                    expect(count).to.equal(0);
+                } else {
+                    throw new Error(
+                        'createEndpoint return value is not MessagePort'
+                    );
+                }
             },
         },
         {
@@ -122,7 +128,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
         },
     ];
 
-    return async (output: HTMLPreElement) => {
+    return async (output?: HTMLPreElement) => {
         const message = await testCases.reduce(async (lastCateInfo, item) => {
             const msg = await lastCateInfo;
             const res = await item
@@ -132,9 +138,14 @@ export const wrapCounter = (endpoint: Endpoint) => {
                     console.error(item.message, error.message);
                     return `failure(${error.message || ''})`;
                 });
-            output.innerHTML = `${msg}\n${item.message} ${res}`;
-            return output.innerHTML;
-        }, Promise.resolve(output.innerHTML));
+
+            const info = `${msg}\n${item.message} ${res}`;
+            if (output) {
+                output.innerHTML = info;
+            }
+
+            return info;
+        }, Promise.resolve(output?.innerHTML || ''));
         return message;
     };
 };
