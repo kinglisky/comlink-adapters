@@ -8,7 +8,7 @@ import type { Endpoint, TransferHandler } from 'comlink';
  * Internal transfer handle to handle objects marked to proxy.
  * https://github.com/GoogleChromeLabs/comlink#transfer-handlers-and-event-listeners
  */
-export const proxyTransferHandler: TransferHandler<object, any> = {
+const proxyTransferHandler: TransferHandler<object, any> = {
     canHandle: (val): val is ProxyMarked => {
         return isObject(val) && (val as ProxyMarked)[proxyMarker];
     },
@@ -22,6 +22,12 @@ export const proxyTransferHandler: TransferHandler<object, any> = {
     },
 };
 
+/**
+ * create runtime port endpoint(Long-lived connections)
+ * https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
+ * @param port
+ * @returns
+ */
 export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
     transferHandlers.set('proxy', proxyTransferHandler);
 
