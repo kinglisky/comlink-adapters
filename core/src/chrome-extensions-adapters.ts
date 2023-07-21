@@ -23,7 +23,7 @@ const proxyTransferHandler: TransferHandler<object, any> = {
 };
 
 /**
- * create runtime port endpoint(Long-lived connections)
+ * create chrome runtime port endpoint(Long-lived connections)
  * https://developer.chrome.com/docs/extensions/mv3/messaging/#connect
  * @param port
  * @returns
@@ -68,6 +68,75 @@ export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
 
             const handler = listeners.get(eventHandler);
             if (handler) {
+                listeners.delete(eventHandler);
+            }
+        },
+    };
+}
+
+/**
+ * create chrome runtime message endpoint(Simple one-time requests)
+ * https://developer.chrome.com/docs/extensions/mv3/messaging/#simple
+ * @param port
+ * @returns
+ */
+export function chromeRuntimeMessageEndpoint(
+    sender?: chrome.runtime.MessageSender
+): Endpoint {
+    transferHandlers.set('proxy', proxyTransferHandler);
+
+    const listeners = new Set<EventListenerOrEventListenerObject>();
+    const senderRecord = new Map<string, chrome.runtime.MessageSender>();
+
+    const handleMessageListener = (
+        data: any,
+        _sender: chrome.runtime.MessageSender,
+        _sendResponse: (response?: any) => void
+    ) => {
+        if (!data || !listeners.size) return;
+
+        for (const eventHandler of listeners.values()) {
+            if ('handleEvent' in eventHandler) {
+                eventHandler.handleEvent({
+                    data,
+                    ports: [],
+                } as unknown as MessageEvent);
+            } else {
+                eventHandler({
+                    data,
+                    ports: [],
+                } as unknown as MessageEvent);
+            }
+        }
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessageListener);
+
+    return {
+        start: () => {},
+
+        postMessage: (message: any, _transfer: MessagePort[]) => {
+            if (sender && sender.tab) {
+                chrome.tabs.sendMessage(sender.tab.id!, message);
+                senderRecord.delete(message.id);
+            } else {
+                chrome.runtime.sendMessage(message);
+            }
+        },
+
+        addEventListener: (eventName, eventHandler) => {
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
+            listeners.add(eventHandler);
+        },
+
+        removeEventListener: (eventName, eventHandler) => {
+            if (eventName !== MESSAGE_EVENT_NAME) {
+                throw new Error(MESSAGE_EVENT_ERROR);
+            }
+
+            if (listeners.has(eventHandler)) {
                 listeners.delete(eventHandler);
             }
         },
