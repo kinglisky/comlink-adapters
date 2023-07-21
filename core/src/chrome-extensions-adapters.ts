@@ -86,7 +86,6 @@ export function chromeRuntimeMessageEndpoint(
     transferHandlers.set('proxy', proxyTransferHandler);
 
     const listeners = new Set<EventListenerOrEventListenerObject>();
-    const senderRecord = new Map<string, chrome.runtime.MessageSender>();
 
     const handleMessageListener = (
         data: any,
@@ -118,7 +117,6 @@ export function chromeRuntimeMessageEndpoint(
         postMessage: (message: any, _transfer: MessagePort[]) => {
             if (sender && sender.tab) {
                 chrome.tabs.sendMessage(sender.tab.id!, message);
-                senderRecord.delete(message.id);
             } else {
                 chrome.runtime.sendMessage(message);
             }
