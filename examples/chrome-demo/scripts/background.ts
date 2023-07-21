@@ -27,13 +27,15 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message === 'chromeRuntimeMessageEndpoint content call background') {
-        exposeCounter(chromeRuntimeMessageEndpoint(sender));
+        exposeCounter(chromeRuntimeMessageEndpoint({ tabId: sender.tab?.id }));
         sendResponse();
         return true;
     }
 
     if (message === 'chromeRuntimeMessageEndpoint background call content') {
-        const testCounter = wrapCounter(chromeRuntimeMessageEndpoint(sender));
+        const testCounter = wrapCounter(
+            chromeRuntimeMessageEndpoint({ tabId: sender.tab?.id })
+        );
         testCounter().then((info) => {
             console.log(
                 'chromeRuntimeMessageEndpoint background call content:',

@@ -80,9 +80,10 @@ export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
  * @param port
  * @returns
  */
-export function chromeRuntimeMessageEndpoint(
-    sender?: chrome.runtime.MessageSender
-): Endpoint {
+export function chromeRuntimeMessageEndpoint(options?: {
+    tabId?: number;
+}): Endpoint {
+    const { tabId = 0 } = options || {};
     transferHandlers.set('proxy', proxyTransferHandler);
 
     const listeners = new Set<EventListenerOrEventListenerObject>();
@@ -115,8 +116,8 @@ export function chromeRuntimeMessageEndpoint(
         start: () => {},
 
         postMessage: (message: any, _transfer: MessagePort[]) => {
-            if (sender && sender.tab) {
-                chrome.tabs.sendMessage(sender.tab.id!, message);
+            if (tabId) {
+                chrome.tabs.sendMessage(tabId, message);
             } else {
                 chrome.runtime.sendMessage(message);
             }
