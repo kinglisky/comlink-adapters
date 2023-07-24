@@ -15,7 +15,7 @@ function setupTestCounter(options: {
 
     const startPortEndpointTest = async () => {
         const port = chrome.runtime.connect({
-            name: 'popup-to-background',
+            name: 'popup connect background',
         });
 
         const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));

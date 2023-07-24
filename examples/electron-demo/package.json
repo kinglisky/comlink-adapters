@@ -5,7 +5,7 @@
     "description": "Really simple Electron + Vite boilerplate.",
     "author": "草鞋没号 <308487730@qq.com>",
     "license": "MIT",
-    "private": false,
+    "private": true,
     "keywords": [
         "electron",
         "rollup",

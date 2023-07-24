@@ -6,6 +6,15 @@ import { exposeCounter, wrapCounter } from '@examples/test';
 
 chrome.runtime.onInstalled.addListener(async (details) => {
     console.log('chrome.runtime.onInstalled', details);
+
+    const extId = 'cobhdmhleblpliecdndmollakeaeiahd';
+    await chrome.runtime.sendMessage(extId, 'test bacckground message');
+    const port = chrome.runtime.connect(extId, {
+        name: 'background connect external background',
+    });
+    const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
+    const info = await testCounter();
+    console.log('testCounter info', info);
 });
 
 chrome.runtime.onStartup.addListener(() => {
@@ -14,12 +23,12 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.runtime.onConnect.addListener(function (port) {
     console.log('chrome.runtime.onConnect', port.name, port);
-    if (port.name === 'content-to-background') {
+    if (port.name === 'content connect background') {
         console.log('background expose content chromeRuntimePortEndpoint');
         exposeCounter(chromeRuntimePortEndpoint(port));
     }
 
-    if (port.name === 'popup-to-background') {
+    if (port.name === 'popup connect background') {
         console.log('background expose popup chromeRuntimePortEndpoint');
         exposeCounter(chromeRuntimePortEndpoint(port));
     }

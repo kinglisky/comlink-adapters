@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "B.Chrome Extensions Adapters Example",
+    "version": "1.0.0",
+    "action": { "default_popup": "pages/popup/index.html" },
+    "content_scripts": [
+        {
+            "js": ["scripts/content.ts"],
+            "matches": ["https://developer.chrome.com/docs/extensions/*"]
+        }
+    ],
+    "background": {
+        "service_worker": "scripts/background.ts",
+        "type": "module"
+    }
+}

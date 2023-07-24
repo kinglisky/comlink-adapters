@@ -12,7 +12,18 @@ const log = (msg: string) => {
 (async function () {
     const desc = 'chromeRuntimePortEndpoint content call background';
     const port = chrome.runtime.connect({
-        name: 'content-to-background',
+        name: 'content connect background',
+    });
+    const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
+    const info = await testCounter();
+    log(`${desc}:${info}`);
+})();
+
+(async function () {
+    const extId = 'cobhdmhleblpliecdndmollakeaeiahd';
+    const desc = `chromeRuntimePortEndpoint content call ext background`;
+    const port = chrome.runtime.connect(extId, {
+        name: 'background connect external background',
     });
     const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
     const info = await testCounter();

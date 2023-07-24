@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "CRXJS Vanilla JS Example",
+    "name": "A.Chrome Extensions Adapters Example",
     "version": "1.0.0",
     "action": { "default_popup": "pages/popup/index.html" },
     "content_scripts": [
@@ -12,5 +12,8 @@
     "background": {
         "service_worker": "scripts/background.ts",
         "type": "module"
+    },
+    "externally_connectable": {
+        "matches": ["https://developer.chrome.com/docs/extensions/*"]
     }
 }

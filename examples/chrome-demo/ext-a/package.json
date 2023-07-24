@@ -1,6 +1,6 @@
 {
-    "name": "@examples/chrome-demo",
-    "private": false,
+    "name": "@examples/chrome-ext-a",
+    "private": true,
     "version": "0.0.0",
     "type": "module",
     "scripts": {

@@ -26,7 +26,7 @@ importers:
       vite: 4.3.3
       vite-plugin-dts: 2.3.0_vite@4.3.3
 
-  examples/chrome-demo:
+  examples/chrome-demo/ext-a:
     specifiers:
       '@crxjs/vite-plugin': ^1.0.14
       '@examples/test': workspace:^1.0.0
@@ -36,9 +36,28 @@ importers:
       typescript: ^5.0.2
       vite: ^4.3.2
     dependencies:
-      '@examples/test': link:../test
+      '@examples/test': link:../../test
       comlink: 4.4.1
-      comlink-adapters: link:../../core
+      comlink-adapters: link:../../../core
+    devDependencies:
+      '@crxjs/vite-plugin': 1.0.14_vite@4.3.3
+      '@types/chrome': 0.0.237
+      typescript: 5.0.4
+      vite: 4.3.3
+
+  examples/chrome-demo/ext-b:
+    specifiers:
+      '@crxjs/vite-plugin': ^1.0.14
+      '@examples/test': workspace:^1.0.0
+      '@types/chrome': ^0.0.237
+      comlink: ^4.4.1
+      comlink-adapters: workspace:^0.0.0
+      typescript: ^5.0.2
+      vite: ^4.3.2
+    dependencies:
+      '@examples/test': link:../../test
+      comlink: 4.4.1
+      comlink-adapters: link:../../../core
     devDependencies:
       '@crxjs/vite-plugin': 1.0.14_vite@4.3.3
       '@types/chrome': 0.0.237
