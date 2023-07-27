@@ -82,8 +82,15 @@ export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
  */
 export function chromeRuntimeMessageEndpoint(options?: {
     tabId?: number;
+    extensionId?: string;
+    listenExternalMessage?: boolean;
 }): Endpoint {
-    const { tabId = 0 } = options || {};
+    const {
+        tabId = 0,
+        extensionId = '',
+        listenExternalMessage = false,
+    } = options || {};
+
     transferHandlers.set('proxy', proxyTransferHandler);
 
     const listeners = new Set<EventListenerOrEventListenerObject>();
@@ -110,17 +117,30 @@ export function chromeRuntimeMessageEndpoint(options?: {
         }
     };
 
-    chrome.runtime.onMessage.addListener(handleMessageListener);
+    if (listenExternalMessage) {
+        chrome.runtime.onMessageExternal.addListener(handleMessageListener);
+    } else {
+        chrome.runtime.onMessage.addListener(handleMessageListener);
+    }
 
     return {
         start: () => {},
 
         postMessage: (message: any, _transfer: MessagePort[]) => {
+            // send to tab
             if (tabId) {
                 chrome.tabs.sendMessage(tabId, message);
-            } else {
-                chrome.runtime.sendMessage(message);
+                return;
             }
+
+            // send to other extension
+            if (extensionId) {
+                chrome.runtime.sendMessage(extensionId, message);
+                return;
+            }
+
+            // send self
+            chrome.runtime.sendMessage(message);
         },
 
         addEventListener: (eventName, eventHandler) => {
