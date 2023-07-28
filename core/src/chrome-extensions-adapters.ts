@@ -77,7 +77,7 @@ export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
 /**
  * create chrome runtime message endpoint(Simple one-time requests)
  * https://developer.chrome.com/docs/extensions/mv3/messaging/#simple
- * @param port
+ * @param options
  * @returns
  */
 export function chromeRuntimeMessageEndpoint(options?: {
