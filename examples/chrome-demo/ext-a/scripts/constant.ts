@@ -1,1 +1,1 @@
-export const OTHER_EXITENSION_ID = 'cobhdmhleblpliecdndmollakeaeiahd';
+export const EXT_B_ID = 'caaocdlncnflblilmkhhapoliiofogcl';

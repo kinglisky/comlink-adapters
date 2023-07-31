@@ -85,11 +85,10 @@ export function chromeRuntimeMessageEndpoint(options?: {
     extensionId?: string;
     listenExternalMessage?: boolean;
 }): Endpoint {
-    const {
-        tabId = 0,
-        extensionId = '',
-        listenExternalMessage = false,
-    } = options || {};
+    const { tabId = 0, extensionId = '' } = options || {};
+
+    const listenExternalMessage =
+        options?.listenExternalMessage || !!extensionId;
 
     transferHandlers.set('proxy', proxyTransferHandler);
 

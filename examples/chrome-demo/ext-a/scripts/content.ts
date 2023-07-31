@@ -3,7 +3,7 @@ import {
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
 import { wrapCounter, exposeCounter } from '@examples/test';
-import { OTHER_EXITENSION_ID } from './constant';
+import { EXT_B_ID } from './constant';
 
 const log = (msg: string) => {
     console.log(msg);
@@ -22,7 +22,7 @@ const log = (msg: string) => {
 
 (async function () {
     const desc = `chromeRuntimePortEndpoint content call ext background`;
-    const port = chrome.runtime.connect(OTHER_EXITENSION_ID, {
+    const port = chrome.runtime.connect(EXT_B_ID, {
         name: 'background connect external background',
     });
     const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
@@ -49,7 +49,7 @@ const log = (msg: string) => {
 
 (async function () {
     const desc = 'chromeRuntimeMessageEndpoint content call ext background';
-    await chrome.runtime.sendMessage(OTHER_EXITENSION_ID, desc);
+    await chrome.runtime.sendMessage(EXT_B_ID, desc);
     const testCounter = wrapCounter(chromeRuntimeMessageEndpoint());
     const info = await testCounter();
     log(`${desc}:${info}`);

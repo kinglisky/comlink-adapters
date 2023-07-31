@@ -3,26 +3,9 @@ import {
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
 import { exposeCounter, wrapCounter } from '@examples/test';
-import { OTHER_EXITENSION_ID } from './constant';
 
 chrome.runtime.onInstalled.addListener(async (details) => {
-    console.log('chrome.runtime.onInstalled', details);
-
-    const port = chrome.runtime.connect(OTHER_EXITENSION_ID, {
-        name: 'background connect external background',
-    });
-    let testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
-    let info = await testCounter();
-    console.log('chromeRuntimePortEndpoint external testCounter info', info);
-
-    const desc = 'chromeRuntimeMessageEndpoint background call ext background';
-    const res = await chrome.runtime.sendMessage(OTHER_EXITENSION_ID, desc);
-    console.log(res);
-    testCounter = wrapCounter(
-        chromeRuntimeMessageEndpoint({ extensionId: OTHER_EXITENSION_ID })
-    );
-    info = await testCounter();
-    console.log(desc, info);
+    console.log('A chrome.runtime.onInstalled', details);
 });
 
 chrome.runtime.onStartup.addListener(() => {
@@ -98,4 +81,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     sendResponse();
     return true;
+});
+
+chrome.runtime.onMessageExternal.addListener(async (message, sender) => {
+    if (message !== 'ext b init') return;
+    console.log('ext b init', sender);
+
+    const port = chrome.runtime.connect(sender.id!, {
+        name: 'background connect external background',
+    });
+    let testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
+    let info = await testCounter();
+    console.log('chromeRuntimePortEndpoint external testCounter info', info);
+
+    const desc = 'chromeRuntimeMessageEndpoint background call ext background';
+    chrome.runtime.sendMessage(sender.id!, desc);
+    testCounter = wrapCounter(
+        chromeRuntimeMessageEndpoint({ extensionId: sender.id! })
+    );
+    info = await testCounter();
+    console.log(desc, info);
 });

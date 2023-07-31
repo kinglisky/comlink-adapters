@@ -2,9 +2,14 @@ import {
     chromeRuntimePortEndpoint,
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
-import { exposeCounter, wrapCounter } from '@examples/test';
+import { exposeCounter } from '@examples/test';
 
-console.log('init background');
+export const EXT_A_ID = 'fblgjeeaneigobblejofdmchoajnkehh';
+
+chrome.runtime.onInstalled.addListener(async (details) => {
+    console.log('B chrome.runtime.onInstalled', details, EXT_A_ID);
+    chrome.runtime.sendMessage(EXT_A_ID, 'ext b init');
+});
 
 chrome.runtime.onConnectExternal.addListener((port) => {
     if (port.name === 'background connect external background') {

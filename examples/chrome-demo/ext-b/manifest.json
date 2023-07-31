@@ -12,5 +12,9 @@
     "background": {
         "service_worker": "scripts/background.ts",
         "type": "module"
+    },
+    "externally_connectable": {
+        "ids": ["fblgjeeaneigobblejofdmchoajnkehh"],
+        "matches": ["https://developer.chrome.com/docs/extensions/*"]
     }
 }
