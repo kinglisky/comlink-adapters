@@ -85,20 +85,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.runtime.onMessageExternal.addListener(async (message, sender) => {
     if (message !== 'ext b init') return;
+
     console.log('ext b init', sender);
 
-    const port = chrome.runtime.connect(sender.id!, {
-        name: 'background connect external background',
-    });
-    let testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
-    let info = await testCounter();
-    console.log('chromeRuntimePortEndpoint external testCounter info', info);
+    (async function () {
+        const desc = 'chromeRuntimePortEndpoint background call ext background';
+        const port = chrome.runtime.connect(sender.id!, {
+            name: 'background connect external background',
+        });
+        const testCounter = wrapCounter(chromeRuntimePortEndpoint(port));
+        const info = await testCounter();
+        console.log(desc, info);
+    })();
 
-    const desc = 'chromeRuntimeMessageEndpoint background call ext background';
-    chrome.runtime.sendMessage(sender.id!, desc);
-    testCounter = wrapCounter(
-        chromeRuntimeMessageEndpoint({ extensionId: sender.id! })
-    );
-    info = await testCounter();
-    console.log(desc, info);
+    (async function () {
+        const desc =
+            'chromeRuntimeMessageEndpoint background call ext background';
+        await chrome.runtime.sendMessage(sender.id!, desc);
+        const testCounter = wrapCounter(
+            chromeRuntimeMessageEndpoint({ extensionId: sender.id! })
+        );
+        const info = await testCounter();
+        console.log(desc, info);
+    })();
 });

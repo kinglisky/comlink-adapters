@@ -4,7 +4,7 @@ import {
 } from 'comlink-adapters';
 import { exposeCounter } from '@examples/test';
 
-export const EXT_A_ID = 'fblgjeeaneigobblejofdmchoajnkehh';
+import { EXT_A_ID } from './constant';
 
 chrome.runtime.onInstalled.addListener(async (details) => {
     console.log('B chrome.runtime.onInstalled', details, EXT_A_ID);
@@ -22,7 +22,7 @@ chrome.runtime.onMessageExternal.addListener(
     (message, sender, sendResponse) => {
         if (
             message ===
-            'chromeRuntimeMessageEndpoint content call ext background'
+            'chromeRuntimeMessageEndpoint content call external background'
         ) {
             exposeCounter(
                 chromeRuntimeMessageEndpoint({
@@ -36,7 +36,7 @@ chrome.runtime.onMessageExternal.addListener(
 
         if (
             message ===
-            'chromeRuntimeMessageEndpoint background call ext background'
+            'chromeRuntimeMessageEndpoint background call external background'
         ) {
             exposeCounter(
                 chromeRuntimeMessageEndpoint({

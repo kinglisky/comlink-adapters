@@ -48,7 +48,8 @@ const log = (msg: string) => {
 })();
 
 (async function () {
-    const desc = 'chromeRuntimeMessageEndpoint content call ext background';
+    const desc =
+        'chromeRuntimeMessageEndpoint content call external background';
     await chrome.runtime.sendMessage(EXT_B_ID, desc);
     const testCounter = wrapCounter(chromeRuntimeMessageEndpoint());
     const info = await testCounter();
