@@ -83,12 +83,8 @@ export function chromeRuntimePortEndpoint(port: chrome.runtime.Port): Endpoint {
 export function chromeRuntimeMessageEndpoint(options?: {
     tabId?: number;
     extensionId?: string;
-    listenExternalMessage?: boolean;
 }): Endpoint {
     const { tabId = 0, extensionId = '' } = options || {};
-
-    const listenExternalMessage =
-        options?.listenExternalMessage || !!extensionId;
 
     transferHandlers.set('proxy', proxyTransferHandler);
 
@@ -116,7 +112,7 @@ export function chromeRuntimeMessageEndpoint(options?: {
         }
     };
 
-    if (listenExternalMessage) {
+    if (extensionId) {
         chrome.runtime.onMessageExternal.addListener(handleMessageListener);
     } else {
         chrome.runtime.onMessage.addListener(handleMessageListener);

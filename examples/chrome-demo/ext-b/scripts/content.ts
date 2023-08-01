@@ -1,1 +1,1 @@
-console.log('init content');
+console.log('B:init content');

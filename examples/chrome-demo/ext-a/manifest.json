@@ -16,5 +16,6 @@
     "externally_connectable": {
         "ids": ["caaocdlncnflblilmkhhapoliiofogcl"],
         "matches": ["https://developer.chrome.com/docs/extensions/*"]
-    }
+    },
+    "permissions": ["tabs", "http://*/*", "https://*/*"]
 }
