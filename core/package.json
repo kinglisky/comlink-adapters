@@ -18,7 +18,8 @@
     "types": "./dist/index.d.ts",
     "scripts": {
         "dev": "tsc && vite build --watch",
-        "build": "tsc && vite build"
+        "build": "tsc && vite build",
+        "pub": ""
     },
     "devDependencies": {
         "@figma/plugin-typings": "^1.63.0",

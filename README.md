@@ -2,9 +2,9 @@
 
 implementation different platforms comlink adapter
 
--   electron
--   figma
--   chrome extension
+- [x] electron
+- [x] figma
+- [x] chrome extension
 
 ## Electron
 
