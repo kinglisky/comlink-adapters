@@ -13,9 +13,9 @@
 [comlink](https://github.com/GoogleChromeLabs/comlink) 的核心实现基于 `postMessage` 和 [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，理论上在支持 `Proxy` 与类 `postMessage` 双向通信机制的 Javascript 环境中都可以实现一套 comlink 适配器，使之可以在 WebWorkers 之外的环境使用，适配器的实现可以参考 [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts)。
 
 
-部分 comlink 的高级功能需要 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 的支持，部分平台的适配器可能无法支持，涉及的高级功能有：
+部分 comlink 的高级功能需要用到 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 创建与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 传递，有些平台的适配器可能无法支持，涉及的高级功能有：
 
-- 使用 `new` 构造远程代理对象，例如：`const obj = await new RemoteProxyObj();` 
+- 使用 `new ProxyTarget()` 构造远程代理对象
 - [Comlink.proxy](https://github.com/GoogleChromeLabs/comlink#comlinktransfervalue-transferables-and-comlinkproxyvalue)
 - [Comlink.createEndpoint](https://github.com/GoogleChromeLabs/comlink#comlinkcreateendpoint)
 
@@ -26,7 +26,7 @@
 - [x] Figma
 - [x] Chrome extensions
 
-欢迎提 [issues](https://github.com/kinglisky/comlink-adapters/issues) 或者一起开发完成各个应用平台的适配器。
+欢迎提 [issues](https://github.com/kinglisky/comlink-adapters/issues) 或者一起新增其他应用平台的适配器。
 
 ## Start
 
@@ -59,6 +59,8 @@ Features:
 | release | [x] | `proxyObj[comlink.releaseProxy]();`| |
 
 createEndpoint 支持但不建议使用，内部实现使用 MessagePort 与 MessagePortMain 进行桥接，效率较差。
+
+---
 
 **electronMainEndpoint(params: ElectronMainEndpointParams);**
 
@@ -110,6 +112,7 @@ ipcMain.on('init-comlink-endponit:syn', (event: IpcMainEvent) => {
     senderWeakMap.set(event.sender, true);
 });
 ```
+---
 
 **electronRendererEndpoint(params: ElectronRendererEndpointParams);** 
 
@@ -149,9 +152,12 @@ const sum = await remoteAdd(1, 2);
 // output: 3
 ```
 
+---
 ### Figma Adapters
 
 TODO
+
+---
 ### Chrome Extensions Adapters
 
 TODO
