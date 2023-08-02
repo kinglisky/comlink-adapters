@@ -1,10 +1,23 @@
 {
     "name": "comlink-adapters",
     "private": false,
-    "version": "0.0.0",
+    "version": "0.0.0-beta-1",
+    "description": "Implementation of comlink adapters for different application platforms",
+    "keywords": [
+        "comlink",
+        "adapters",
+        "message passing",
+        "electron",
+        "figma",
+        "chrome extensions",
+        "proxy",
+        "MessagePort",
+        "MessageChannel"
+    ],
     "type": "module",
     "files": [
-        "dist"
+        "dist",
+        "README.md"
     ],
     "main": "./dist/comlink-adapters.umd.cjs",
     "module": "./dist/comlink-adapters.js",
@@ -20,6 +33,14 @@
         "dev": "tsc && vite build --watch",
         "build": "tsc && vite build",
         "pub": ""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kinglisky/comlink-adapters.git"
+    },
+    "author": {
+        "name": "kinglisky",
+        "email": "kinglisky@icloud.com"
     },
     "devDependencies": {
         "@figma/plugin-typings": "^1.63.0",

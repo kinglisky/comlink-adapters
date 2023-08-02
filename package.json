@@ -1,7 +1,18 @@
 {
     "name": "comlink-adapters-monorepo",
     "version": "1.0.0",
-    "description": "实现",
+    "description": "Implementation of comlink adapters for different application platforms",
+    "keywords": [
+        "comlink",
+        "adapters",
+        "message passing",
+        "electron",
+        "figma",
+        "chrome extensions",
+        "proxy",
+        "MessagePort",
+        "MessageChannel"
+    ],
     "main": "index.js",
     "directories": {
         "example": "examples"
@@ -15,8 +26,11 @@
         "type": "git",
         "url": "git+https://github.com/kinglisky/comlink-adapters.git"
     },
-    "author": "",
-    "license": "ISC",
+    "author": {
+        "name": "kinglisky",
+        "email": "kinglisky@icloud.com"
+    },
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/kinglisky/comlink-adapters/issues"
     },
