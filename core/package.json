@@ -32,7 +32,7 @@
     "scripts": {
         "dev": "tsc && vite build --watch",
         "build": "tsc && vite build",
-        "pub": ""
+        "pub": "pnpm publish"
     },
     "repository": {
         "type": "git",
