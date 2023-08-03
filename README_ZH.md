@@ -1,36 +1,39 @@
 <h1 align="center">comlink-adapters</h1>
 
 <div align="center">
-Implementation of comlink adapters for different application platforms
+不同应用平台的 comlink 适配器实现
 
 English &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
+
 </div>
 
-## Introduction
+## 介绍
 
 > Comlink makes WebWorkers enjoyable. Comlink is a tiny library (1.1kB), that removes the mental barrier of thinking about postMessage and hides the fact that you are working with workers.
 
 > At a more abstract level it is an RPC implementation for postMessage and ES6 Proxies.
 
-The core implementation of [comlink](https://github.com/GoogleChromeLabs/comlink) is based on `postMessage` and [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). In theory, a comlink adapter can be implemented in any Javascript environment that supports `Proxy` and `postMessage` bi-directional communication mechanisms, making it possible to use it in environments other than WebWorkers. The implementation of the adapter can refer to [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts).
+[comlink](https://github.com/GoogleChromeLabs/comlink) 的核心实现基于 `postMessage` 和 [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，理论上在支持 `Proxy` 与类 `postMessage` 双向通信机制的 Javascript 环境中都可以实现一套 comlink 适配器，使之可以在 WebWorkers 之外的环境使用，适配器的实现可以参考 [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts)。
 
-Some advanced features of comlink require the use of [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) and [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) for transmission, and some platform adapters may not support these features. These advanced features include:
 
-- Constructing remote proxy objects with `new ProxyTarget()`
+部分 comlink 的高级功能需要用到 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 传递，有些平台的适配器可能无法支持，涉及的高级功能有：
+
+- 使用 `new ProxyTarget()` 构造远程代理对象
 - [Comlink.proxy](https://github.com/GoogleChromeLabs/comlink#comlinktransfervalue-transferables-and-comlinkproxyvalue)
 - [Comlink.createEndpoint](https://github.com/GoogleChromeLabs/comlink#comlinkcreateendpoint)
 
-The currently implemented adapters are as follows:
+
+目前实现的适配器如下：
 
 - [x] [Electron](https://www.electronjs.org/)
 - [x] [Figma](https://www.figma.com/plugin-docs/)
 - [x] [Chrome extensions](https://developer.chrome.com/docs/extensions/)
 
-We welcome you to raise [issues](https://github.com/kinglisky/comlink-adapters/issues) or to contribute to the development of adapters for other application platforms.
+欢迎提 [issues](https://github.com/kinglisky/comlink-adapters/issues) 或者一起新增其他应用平台的适配器。
 
-## Guide
+## 指引
 
-### Installation
+### 安装
 
 ```bash
 # npm
@@ -43,9 +46,9 @@ pnpm add comlink comlink-adapters
 
 ### Electron Adapters
 
-Adapters:
-- `electronMainEndpoint` is used to create `Endpoint` objects in the main process.
-- `electronRendererEndpoint` is used to create `Endpoint` objects in the rendering process.
+Adapters：
+- `electronMainEndpoint` 用于主进程创建 `Endpoint` 对象。
+- `electronRendererEndpoint` 用于渲染进程创建 `Endpoint` 对象。
 
 Features:
 | Feature | Support | Example | Description |
@@ -55,10 +58,10 @@ Features:
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ✅ | `await new ProxyObj();` | |
 | proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
-| createEndpoint | ✅ | `proxyObj[comlink.createEndpoint]();`| Not recommended to use |
+| createEndpoint | ✅ | `proxyObj[comlink.createEndpoint]();`| 不建议使用 |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
-Support for `createEndpoint` is provided, but it is not recommended to use. The internal implementation bridges MessagePort and MessagePortMain, which results in poor efficiency.
+createEndpoint 支持但不建议使用，内部实现使用 MessagePort 与 MessagePortMain 进行桥接，效率较差。
 
 ---
 
@@ -76,10 +79,10 @@ interface electronMainEndpoint {
   (options: ElectronMainEndpointOptions): Endpoint;
 }
 ```
-- **sender：** The renderer WebContents object to communicate with.
-- **ipcMain：** The IpcMain object in Electron.
-- **messageChannelConstructor：** Constructor of MessageChannel, using MessageChannelMain in the main process.
-- **channelName：** The IPC channel identifier, default is `__COMLINK_MESSAGE_CHANNEL__`. Multiple pairs of comlink endpoints can be created via channelName.
+- **sender：** 与之通信的 renderer WebContents 对象。
+- **ipcMain：** Electron 中的 IpcMain 对象。
+- **messageChannelConstructor：** MessageChannel 的构造器，在主进程使用 MessageChannelMain。
+- **channelName：** IPC channel 标识，默认为 `__COMLINK_MESSAGE_CHANNEL__`，可以通过 channelName 创建多对 comlink endpoint。
 
 ```typescript
 // main.ts
@@ -131,8 +134,8 @@ interface electronRendererEndpoint {
 }
 ```
 
-- **ipcRenderer：** The IpcRenderer object in Electron.
-- **channelName：** IPC channel identifier.
+- **ipcRenderer：** Electron 中的 IpcRenderer 对象。
+- **channelName：** IPC channel 标识。
 
 ```typescript
 // renderer.ts
@@ -162,12 +165,11 @@ type Add = (a: number, b: number) => number;
 ```
 
 ---
-
 ### Figma Adapters
 
-Adapters:
-- `figmaCoreEndpoint` is used to create `Endpoint` objects in the main thread of the Figma sandbox.
-- `figmaUIEndpoint` is used to create `Endpoint` objects in the Figma UI process.
+Adapters：
+- `figmaCoreEndpoint` 用于 Figma 沙箱中主线程创建 `Endpoint` 对象。
+- `figmaUIEndpoint` 用于 Figma UI 进程创建 `Endpoint` 对象。
 
 Features:
 | Feature | Support | Example | Description |
@@ -175,9 +177,9 @@ Features:
 | set | ✅ | `await proxyObj.someValue;` | |
 | get | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
-| construct | ❌ | `await new ProxyObj();` | The Core thread does not support MessageChannel, and the MessagePort cannot be transferred between Core and UI threads |
-| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | Same as above |
-| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Same as above |
+| construct | ❌ | `await new ProxyObj();` | Core 线程不支持 MessageChannel，Core 与 UI 线程无法传递 MessagePort |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | 同上 |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| 同上 |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
@@ -194,8 +196,8 @@ interface figmaCoreEndpoint {
     (params: FigmaCoreEndpointParams): Endpoint
 }
 ```
-- **origin:** Configuration of `origin` in [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage), default is `*`.
-- **checkProps:** Used to check the origin in `props` returned by [figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on).
+- **origin:** [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) 的 `origin` 配置，默认为 `*`。
+- **checkProps:** 用于检查 [ figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on) 返回 `props` 中的 `origin` 来源。
 
 ```typescript
 // core.ts
@@ -217,7 +219,7 @@ interface figmaUIEndpoint {
     (params: FigmaUIEndpointOptions): Endpoint
 }
 ```
-- **origin:** `targetOrigin` configuration in [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) of UI iframe, default is `*`
+- **origin:** UI iframe 中 [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) 的 `targetOrigin` 配置，默认为 `*`
 
 ```typescript
 // ui.ts
@@ -234,9 +236,9 @@ import { figmaUIEndpoint } from 'comlink-adapters';
 
 ### Chrome Extensions Adapters
 
-Adapters:
-- `chromeRuntimePortEndpoint` is used to create `Endpoint` objects for extensions based on long-lived connections.
-- `chromeRuntimeMessageEndpoint` is used to create `Endpoint` objects for extensions based on simple one-off requests.
+Adapters：
+- `chromeRuntimePortEndpoint` 用于扩展基于长会话创建 `Endpoint` 对象。
+- `chromeRuntimeMessageEndpoint` 用于扩展基于简单一次性请求创建 `Endpoint` 对象。
 
 Features:
 | Feature | Support | Example | Description |
@@ -244,13 +246,13 @@ Features:
 | set | ✅ | `await proxyObj.someValue;` | |
 | get | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
-| construct | ❌ | `await new ProxyObj();` | API does not support passing MessagePort |
-| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | Same as above |
-| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Same as above |
+| construct | ❌ | `await new ProxyObj();` | API 接口不支持传递 MessagePort |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | 同上 |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| 同上 |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
-The two main types of communication in Chrome Extensions are [long-lived connections](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect) and [simple one-off requests](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple). For the use of comlink, it is more recommended to use long-lived connections, which are simpler and easier to understand. Note that when using communication between extensions, you need to configure [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/) in `manifest.json` first.
+Chrome Extensions 中的通信形式主要为两种，[长会话](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect)与[简单一次性请求](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple)，就 comlink 使用来说更推荐长会话，其更简单也更便于理解。注意在使用扩展之间通信时需要先在  `manifest.json` 配置 [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/)。
 
 ---
 
@@ -262,9 +264,9 @@ interface chromeRuntimePortEndpoint {
 }
 ```
 
-**port** A `Port` object created by [runtime.connect](https://developer.chrome.com/docs/extensions/reference/runtime/#method-connect) or [tabs.connect](https://developer.chrome.com/docs/extensions/reference/tabs/#method-connect).
+**port** [runtime.connect](https://developer.chrome.com/docs/extensions/reference/runtime/#method-connect) 或 [tabs.connect](https://developer.chrome.com/docs/extensions/reference/tabs/#method-connect) 创建的 `Port` 对象。
 
-Communication between the front and background pages within the extension:
+扩展内部消息调用，前台页面调用背景页面：
 
 ```typescript
 // front.ts (content scripts/popup page/options page)
@@ -298,7 +300,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 });
 ```
 
-Communication between different extensions:
+扩展之间相互通信：
 
 ```typescript
 // extension A background
@@ -342,12 +344,12 @@ interface chromeRuntimeMessageEndpoint {
 }
 ```
 
-- **tabId** The tab id of the page to communicate with
-- **extensionId** The id of the extension to communicate with
+- **tabId** 与之通信的页面 tab id
+- **extensionId** 与之通信扩展 id
 
-If neither `tabId` nor `extensionId` is provided, it means that the communication is between internal pages of the plugin.
+如果不提供 `tabId` 和 `extensionId` 则表明时插件的内部页面间通信。
 
-Communication between internal pages and background pages of the plugin:
+插件内部页面与背景页通信：
 
 ```typescript
 // popup page/options page
@@ -371,7 +373,7 @@ import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
 expose((a: number, b: number) => a + b, chromeRuntimeMessageEndpoint());
 ```
 
-Communication between content scripts and background pages:
+Content Scripts 与背景页通信：
 
 ```typescript
 // content scripts
@@ -390,9 +392,7 @@ import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
 
 ```typescript
 // background
-import {
-
- expose } from 'comlink';
+import { expose } from 'comlink';
 import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -410,7 +410,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 ```
 
-Communication between different extensions:
+扩展之间相互通信：
 
 ```typescript
 // extension A background
@@ -452,15 +452,15 @@ chrome.runtime.onMessageExternal.addListener(
 );
 ```
 
-## Development
+## 开发
 
-Install
+install
 
 ```bash
 pnpm i
 ```
 
-Development
+dev
 ```bash
 cd core
 pnpm run dev
@@ -473,7 +473,7 @@ pnpm run dev
 pnpm -r run dev
 ```
 
-Build
+build
 
 ```bash
 cd core
