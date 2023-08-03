@@ -3,7 +3,7 @@
 <div align="center">
 不同应用平台的 comlink 适配器实现
 
-English &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
+[English](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
 
 </div>
 

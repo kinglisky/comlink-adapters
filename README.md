@@ -3,7 +3,7 @@
 <div align="center">
 Implementation of comlink adapters for different application platforms
 
-English &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
+[English](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
 </div>
 
 ## Introduction
