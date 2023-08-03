@@ -13,7 +13,7 @@
 [comlink](https://github.com/GoogleChromeLabs/comlink) 的核心实现基于 `postMessage` 和 [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，理论上在支持 `Proxy` 与类 `postMessage` 双向通信机制的 Javascript 环境中都可以实现一套 comlink 适配器，使之可以在 WebWorkers 之外的环境使用，适配器的实现可以参考 [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts)。
 
 
-部分 comlink 的高级功能需要用到 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 创建与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 传递，有些平台的适配器可能无法支持，涉及的高级功能有：
+部分 comlink 的高级功能需要用到 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 传递，有些平台的适配器可能无法支持，涉及的高级功能有：
 
 - 使用 `new ProxyTarget()` 构造远程代理对象
 - [Comlink.proxy](https://github.com/GoogleChromeLabs/comlink#comlinktransfervalue-transferables-and-comlinkproxyvalue)
@@ -44,8 +44,8 @@ pnpm add comlink comlink-adapters
 ### Electron Adapters
 
 Adapters：
-- `electronMainEndpoint` 用于创建主进程的 `Endpoint` 对象
-- `electronRendererEndpoint` 用于渲染进程的 `Endpoint` 对象
+- `electronMainEndpoint` 用于主进程创建 `Endpoint` 对象。
+- `electronRendererEndpoint` 用于渲染进程创建 `Endpoint` 对象。
 
 Features:
 | Feature | Support | Example | Description |
@@ -144,7 +144,8 @@ import type { Remote } from 'comlink';
 
 type Add = (a: number, b: number) => number;
 
-const useRemoteAdd = () => {
+(async function() {
+    const useRemoteAdd = () => {
     return new Promise<Remote<Add>>((resolve) => {
         ipcRenderer.on('init-comlink-endponit:ack', () => {
             resolve(wrap<Add>(electronRendererEndpoint({ ipcRenderer })));
@@ -153,8 +154,6 @@ const useRemoteAdd = () => {
         ipcRenderer.postMessage('init-comlink-endponit:syn', null);
     });
 };
-
-(async function() {
     const remoteAdd = await useRemoteAdd();
     const sum = await remoteAdd(1, 2);
     // output: 3
@@ -166,8 +165,8 @@ const useRemoteAdd = () => {
 ### Figma Adapters
 
 Adapters：
-- `figmaCoreEndpoint` 用于创建 Figma 沙箱中主线程的 `Endpoint` 对象。
-- `figmaUIEndpoint` 用于创建 Figma UI 进程的 `Endpoint` 对象。
+- `figmaCoreEndpoint` 用于 Figma 沙箱中主线程创建 `Endpoint` 对象。
+- `figmaUIEndpoint` 用于 Figma UI 进程创建 `Endpoint` 对象。
 
 Features:
 | Feature | Support | Example | Description |
@@ -194,7 +193,7 @@ interface figmaCoreEndpoint {
     (params: FigmaCoreEndpointParams): Endpoint
 }
 ```
-- **origin:** [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) 的 `origin` 配置。
+- **origin:** [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) 的 `origin` 配置，默认为 `*`。
 - **checkProps:** 用于检查 [ figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on) 返回 `props` 中的 `origin` 来源。
 
 ```typescript
@@ -224,9 +223,8 @@ interface figmaUIEndpoint {
 import { wrap } from 'comlink';
 import { figmaUIEndpoint } from 'comlink-adapters';
 
-const add = wrap<(a: number, b: number) => number>(figmaUIEndpoint());
-
 (async function() {
+    const add = wrap<(a: number, b: number) => number>(figmaUIEndpoint());
     const sum = await add(1, 2);
     // output: 3
 })();
@@ -235,4 +233,246 @@ const add = wrap<(a: number, b: number) => number>(figmaUIEndpoint());
 
 ### Chrome Extensions Adapters
 
-TODO
+Adapters：
+- `chromeRuntimePortEndpoint` 用于扩展基于长会话创建 `Endpoint` 对象。
+- `chromeRuntimeMessageEndpoint` 用于扩展基于简单一次性请求创建 `Endpoint` 对象。
+
+Features:
+| Feature | Support | Example | Description |
+| :-----| :----- | :----- | :----- |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ❌ | `await new ProxyObj();` | API 接口不支持传递 MessagePort |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | 同上 |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| 同上 |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
+
+Chrome Extensions 中的通信形式主要为两种，[长会话](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect)与[简单一次性请求](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple)，就 comlink 使用来说更推荐长会话，其更简单也更便于理解。注意在使用扩展之间通信时需要先在  `manifest.json` 配置 [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/)。
+
+---
+
+**chromeRuntimePortEndpoint:**
+
+```typescript
+interface chromeRuntimePortEndpoint {
+    (port: chrome.runtime.Port): Endpoint
+}
+```
+
+**port** [runtime.connect](https://developer.chrome.com/docs/extensions/reference/runtime/#method-connect) 或 [tabs.connect](https://developer.chrome.com/docs/extensions/reference/tabs/#method-connect) 创建的 `Port` 对象。
+
+扩展内部消息调用，前台页面调用背景页面：
+
+```typescript
+// front.ts (content scripts/popup page/options page)
+import { wrap } from 'comlink';
+import { chromeRuntimePortEndpoint } from 'comlink-adapters';
+
+(async function () {
+    const port = chrome.runtime.connect({
+        name: 'comlink-message-channel',
+    });
+    const remoteAdd = wrap<(a: number, b: number) => number>(
+        chromeRuntimePortEndpoint(port)
+    );
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
+```
+
+```typescript
+// background.ts
+import { expose } from 'comlink';
+import { chromeRuntimePortEndpoint } from 'comlink-adapters';
+
+chrome.runtime.onConnect.addListener(function (port) {
+    if (port.name === 'comlink-message-channel') {
+        expose(
+            (a: number, b: number) => a + b,
+            chromeRuntimePortEndpoint(port)
+        );
+    }
+});
+```
+
+扩展之间相互通信：
+
+```typescript
+// extension A background
+import { wrap } from 'comlink';
+import { chromeRuntimePortEndpoint } from 'comlink-adapters';
+
+(async function () {
+    const targetExtensionId = 'B Extension ID';
+    const port = chrome.runtime.connect(targetExtensionId, {
+        name: 'comlink-message-channel',
+    });
+    const remoteAdd = wrap<(a: number, b: number) => number>(
+        chromeRuntimePortEndpoint(port)
+    );
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
+```
+
+```typescript
+// extension B background
+import { expose } from 'comlink';
+import { chromeRuntimePortEndpoint } from 'comlink-adapters';
+
+chrome.runtime.onConnectExternal.addListener((port) => {
+    if (port.name === 'comlink-message-channel') {
+        expose(
+            (a: number, b: number) => a + b,
+            chromeRuntimePortEndpoint(port)
+        );
+    }
+});
+```
+---
+
+**chromeRuntimeMessageEndpoint:**
+
+```typescript
+interface chromeRuntimeMessageEndpoint {
+    (options?: { tabId?: number; extensionId?: string }): Endpoint;
+}
+```
+
+- **tabId** 与之通信的页面 tab id
+- **extensionId** 与之通信扩展 id
+
+如果不提供 `tabId` 和 `extensionId` 则表明时插件的内部页面间通信。
+
+插件内部页面与背景页通信：
+
+```typescript
+// popup page/options page
+import { wrap } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+(async function () {
+    const remoteAdd = wrap<(a: number, b: number) => number>(
+        chromeRuntimeMessageEndpoint()
+    );
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
+```
+
+```typescript
+// background
+import { expose } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+expose((a: number, b: number) => a + b, chromeRuntimeMessageEndpoint());
+```
+
+Content Scripts 与背景页通信：
+
+```typescript
+// content scripts
+import { wrap } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+(async function () {
+    await chrome.runtime.sendMessage('create-expose-endpoint');
+    const remoteAdd = wrap<(a: number, b: number) => number>(
+        chromeRuntimeMessageEndpoint()
+    );
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
+```
+
+```typescript
+// background
+import { expose } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message === 'create-expose-endpoint') {
+        expose(
+            (a: number, b: number) => a + b,
+            chromeRuntimeMessageEndpoint({ tabId: sender.tab?.id })
+        );
+        sendResponse();
+        return true;
+    }
+
+    sendResponse();
+    return true;
+});
+```
+
+扩展之间相互通信：
+
+```typescript
+// extension A background
+import { wrap } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+(async function () {
+    const targetExtensionID = 'B Extension ID';
+    chrome.runtime.sendMessage(targetExtensionID, 'create-expose-endpoint');
+    const remoteAdd = wrap<(a: number, b: number) => number>(
+        chromeRuntimeMessageEndpoint()
+    );
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
+```
+
+```typescript
+// extension B background
+import { expose } from 'comlink';
+import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
+
+chrome.runtime.onMessageExternal.addListener(
+    (message, sender, sendResponse) => {
+        if (message === 'create-expose-endpoint') {
+            expose(
+                (a: number, b: number) => a + b,
+                chromeRuntimeMessageEndpoint({
+                    extensionId: sender.id,
+                })
+            );
+            sendResponse();
+            return true;
+        }
+
+        sendResponse();
+        return true;
+    }
+);
+```
+
+## 开发
+
+install
+
+```bash
+pnpm i
+```
+
+dev
+```bash
+cd core
+pnpm run dev
+```
+
+```bash
+cd examples/xxx-demo
+pnpm run dev
+# or
+pnpm -r run dev
+```
+
+build
+
+```bash
+cd core
+pnpm run build
+```

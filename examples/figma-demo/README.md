@@ -4,18 +4,18 @@
 
 install
 
-```base
+```bash
 pnpm i
 ```
 
 dev
 
-```base
+```bash
 pnpm -r run dev
 ```
 
 build
 
-```base
+```bash
 pnpm -r run build
 ```
