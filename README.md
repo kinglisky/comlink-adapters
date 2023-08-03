@@ -22,13 +22,13 @@
 
 目前实现的适配器如下：
 
-- [x] Electron
-- [x] Figma
-- [x] Chrome extensions
+- [x] [Electron](https://www.electronjs.org/)
+- [x] [Figma](https://www.figma.com/plugin-docs/)
+- [x] [Chrome extensions](https://developer.chrome.com/docs/extensions/)
 
 欢迎提 [issues](https://github.com/kinglisky/comlink-adapters/issues) 或者一起新增其他应用平台的适配器。
 
-## Start
+## 指引
 
 ### 安装
 
@@ -50,26 +50,30 @@ Adapters：
 Features:
 | Feature | Support | Example | Description |
 | :-----| :----- | :----- | :----- |
-| set | [x] | `await proxyObj.someValue;` | |
-| get | [x] | `await (proxyObj.someValue = xxx);` | |
-| apply | [x] | `await proxyObj.applySomeMethod();` | |
-| construct | [x] | `await new ProxyObj();` | |
-| proxy function | [x] | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
-| createEndpoint | [x] | `proxyObj[comlink.createEndpoint]();`| 不建议使用 |
-| release | [x] | `proxyObj[comlink.releaseProxy]();`| |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ✅ | `await new ProxyObj();` | |
+| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
+| createEndpoint | ✅ | `proxyObj[comlink.createEndpoint]();`| 不建议使用 |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 createEndpoint 支持但不建议使用，内部实现使用 MessagePort 与 MessagePortMain 进行桥接，效率较差。
 
 ---
 
-**electronMainEndpoint(params: ElectronMainEndpointParams);**
+**electronMainEndpoint:**
 
 ```typescript
-interface ElectronMainEndpointParams {
+interface ElectronMainEndpointOptions {
     sender: WebContents;
     ipcMain: IpcMain;
     messageChannelConstructor: new () => MessageChannelMain;
     channelName?: string;
+}
+
+interface electronMainEndpoint {
+  (options: ElectronMainEndpointOptions): Endpoint;
 }
 ```
 - **sender：** 与之通信的 renderer WebContents 对象。
@@ -114,17 +118,21 @@ ipcMain.on('init-comlink-endponit:syn', (event: IpcMainEvent) => {
 ```
 ---
 
-**electronRendererEndpoint(params: ElectronRendererEndpointParams);** 
+**electronRendererEndpoint：** 
 
 ```typescript
-interface ElectronRendererEndpointParams {
+interface ElectronRendererEndpointOptions {
     ipcRenderer: IpcRenderer;
     channelName?: string;
+}
+
+interface electronRendererEndpoint {
+  (options: ElectronRendererEndpointOptions): Endpoint;
 }
 ```
 
 - **ipcRenderer：** Electron 中的 IpcRenderer 对象。
-- **channelName：** 同样为 IPC channel 标识
+- **channelName：** IPC channel 标识。
 
 ```typescript
 // renderer.ts
@@ -146,18 +154,85 @@ const useRemoteAdd = () => {
     });
 };
 
-const remoteAdd = await useRemoteAdd();
+(async function() {
+    const remoteAdd = await useRemoteAdd();
+    const sum = await remoteAdd(1, 2);
+    // output: 3
+})();
 
-const sum = await remoteAdd(1, 2);
-// output: 3
 ```
 
 ---
 ### Figma Adapters
 
-TODO
+Adapters：
+- `figmaCoreEndpoint` 用于创建 Figma 沙箱中主线程的 `Endpoint` 对象。
+- `figmaUIEndpoint` 用于创建 Figma UI 进程的 `Endpoint` 对象。
+
+Features:
+| Feature | Support | Example | Description |
+| :-----| :----- | :----- | :----- |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ❌ | `await new ProxyObj();` | Core 线程不支持 MessageChannel，Core 与 UI 线程无法传递 MessagePort |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | 同上 |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| 同上 |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
 
 ---
+**figmaCoreEndpoint:**
+
+```typescript
+interface FigmaCoreEndpointOptions {
+    origin?: string;
+    checkProps?: (props: OnMessageProperties) => boolean | Promise<boolean>;
+}
+
+interface figmaCoreEndpoint {
+    (params: FigmaCoreEndpointParams): Endpoint
+}
+```
+- **origin:** [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) 的 `origin` 配置。
+- **checkProps:** 用于检查 [ figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on) 返回 `props` 中的 `origin` 来源。
+
+```typescript
+// core.ts
+import { expose } from 'comlink';
+import { figmaCoreEndpoint } from 'comlink-adapters';
+
+expose((a: number, b: number) => a + b, figmaCoreEndpoint());
+```
+
+---
+**figmaUIEndpoint:**
+
+```typescript
+interface FigmaUIEndpointOptions {
+    origin?: string;
+}
+
+interface figmaUIEndpoint {
+    (params: FigmaUIEndpointOptions): Endpoint
+}
+```
+- **origin:** UI iframe 中 [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) 的 `targetOrigin` 配置，默认为 `*`
+
+```typescript
+// ui.ts
+import { wrap } from 'comlink';
+import { figmaUIEndpoint } from 'comlink-adapters';
+
+const add = wrap<(a: number, b: number) => number>(figmaUIEndpoint());
+
+(async function() {
+    const sum = await add(1, 2);
+    // output: 3
+})();
+```
+---
+
 ### Chrome Extensions Adapters
 
 TODO
