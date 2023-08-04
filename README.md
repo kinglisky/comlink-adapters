@@ -12,7 +12,7 @@ Implementation of comlink adapters for different application platforms
 
 > At a more abstract level it is an RPC implementation for postMessage and ES6 Proxies.
 
-The core implementation of [comlink](https://github.com/GoogleChromeLabs/comlink) is based on `postMessage` and [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). In theory, a comlink adapter can be implemented in any Javascript environment that supports `Proxy` and `postMessage` bi-directional communication mechanisms, making it possible to use it in environments other than WebWorkers. The implementation of the adapter can refer to [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts).
+The core implementation of [comlink](https://github.com/GoogleChromeLabs/comlink) is based on `postMessage` and [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). In theory, a comlink adapter can be implemented in any JavaScript environment that supports `Proxy` and `postMessage` bi-directional communication mechanisms, making it possible to use it in environments other than WebWorkers. The implementation of the adapter can refer to [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts).
 
 Some advanced features of comlink require the use of [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) and [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) for transmission, and some platform adapters may not support these features. These advanced features include:
 
