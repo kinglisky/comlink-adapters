@@ -13,7 +13,7 @@
 
 > At a more abstract level it is an RPC implementation for postMessage and ES6 Proxies.
 
-[comlink](https://github.com/GoogleChromeLabs/comlink) 的核心实现基于 `postMessage` 和 [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，理论上在支持 `Proxy` 与类 `postMessage` 双向通信机制的 Javascript 环境中都可以实现一套 comlink 适配器，使之可以在 WebWorkers 之外的环境使用，适配器的实现可以参考 [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts)。
+[comlink](https://github.com/GoogleChromeLabs/comlink) 的核心实现基于 `postMessage` 和 [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，理论上在支持 `Proxy` 与类 `postMessage` 双向通信机制的 JavaScript 环境中都可以实现一套 comlink 适配器，使之可以在 WebWorkers 之外的环境使用，适配器的实现可以参考 [node-adapter](https://github.com/GoogleChromeLabs/comlink/blob/main/src/node-adapter.ts)。
 
 
 部分 comlink 的高级功能需要用到 [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) 与 [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) 传递，有些平台的适配器可能无法支持，涉及的高级功能有：
