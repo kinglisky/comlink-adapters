@@ -15,8 +15,8 @@
         "vite": "^4.3.2"
     },
     "dependencies": {
-        "@examples/test": "workspace:^1.0.0",
+        "@examples/test": "workspace:*",
         "comlink": "^4.4.1",
-        "comlink-adapters": "workspace:^0.0.0"
+        "comlink-adapters": "workspace:*"
     }
 }
