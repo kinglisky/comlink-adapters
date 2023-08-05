@@ -2,9 +2,10 @@
     "name": "@socket-io-demo/server",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "type": "module",
+    "main": "index.ts",
     "scripts": {
-        "dev": "npx ts-node index.ts"
+        "dev": "ts-node index.ts"
     },
     "keywords": [],
     "author": "",
@@ -15,8 +16,8 @@
         "ts-node": "^10.9.1"
     },
     "dependencies": {
+        "@examples/test": "workspace:^1.0.0",
         "comlink-adapters": "workspace:*",
-        "comlink": "^4.4.1",
         "koa": "^2.14.2",
         "socket.io": "^4.7.2"
     }

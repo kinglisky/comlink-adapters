@@ -13,8 +13,8 @@
         "vite": "^4.4.5"
     },
     "dependencies": {
+        "@examples/test": "workspace:^1.0.0",
         "comlink-adapters": "workspace:*",
-        "comlink": "^4.4.1",
         "socket.io-client": "^4.7.2"
     }
 }

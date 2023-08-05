@@ -8,7 +8,7 @@ import type { Endpoint, TransferHandler } from 'comlink';
  * Internal transfer handle to handle objects marked to proxy.
  * https://github.com/GoogleChromeLabs/comlink#transfer-handlers-and-event-listeners
  */
-export const proxyTransferHandler: TransferHandler<object, any> = {
+const proxyTransferHandler: TransferHandler<object, any> = {
     canHandle: (val): val is ProxyMarked => {
         return isObject(val) && (val as ProxyMarked)[proxyMarker];
     },

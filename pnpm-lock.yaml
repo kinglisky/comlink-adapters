@@ -134,13 +134,13 @@ importers:
 
   examples/socket-io-demo/client:
     specifiers:
-      comlink: ^4.4.1
+      '@examples/test': workspace:^1.0.0
       comlink-adapters: workspace:*
       socket.io-client: ^4.7.2
       typescript: ^5.0.2
       vite: ^4.4.5
     dependencies:
-      comlink: 4.4.1
+      '@examples/test': link:../../test
       comlink-adapters: link:../../../core
       socket.io-client: 4.7.2
     devDependencies:
@@ -149,15 +149,15 @@ importers:
 
   examples/socket-io-demo/server:
     specifiers:
+      '@examples/test': workspace:^1.0.0
       '@types/koa': ^2.13.8
       '@types/node': ^20.4.7
-      comlink: ^4.4.1
       comlink-adapters: workspace:*
       koa: ^2.14.2
       socket.io: ^4.7.2
       ts-node: ^10.9.1
     dependencies:
-      comlink: 4.4.1
+      '@examples/test': link:../../test
       comlink-adapters: link:../../../core
       koa: 2.14.2
       socket.io: 4.7.2

@@ -1,8 +1,8 @@
-import * as Koa from 'koa';
+import Koa from 'koa';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { expose } from 'comlink';
 import { socketIoEndpoint } from 'comlink-adapters';
+import { exposeCounter } from '@examples/test';
 
 const app = new Koa();
 const httpServer = createServer(app.callback());
@@ -12,13 +12,11 @@ const io = new Server(httpServer, {
         origin: 'http://127.0.0.1:5173',
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     },
-    /* options */
 });
 
 io.on('connection', (socket) => {
-    expose((a: number, b: number) => a + b, socketIoEndpoint(socket));
-
-    console.log('connection');
+    exposeCounter(socketIoEndpoint(socket));
+    console.log('socket connected');
 });
 
 httpServer.listen(3000);
