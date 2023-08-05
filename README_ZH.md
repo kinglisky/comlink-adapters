@@ -64,7 +64,6 @@ Features:
 
 createEndpoint 支持但不建议使用，内部实现使用 MessagePort 与 MessagePortMain 进行桥接，效率较差。
 
----
 
 **electronMainEndpoint:**
 
@@ -120,7 +119,7 @@ ipcMain.on('init-comlink-endponit:syn', (event: IpcMainEvent) => {
     senderWeakMap.set(event.sender, true);
 });
 ```
----
+
 
 **electronRendererEndpoint：** 
 
@@ -184,7 +183,6 @@ Features:
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
----
 **figmaCoreEndpoint:**
 
 ```typescript
@@ -208,7 +206,7 @@ import { figmaCoreEndpoint } from 'comlink-adapters';
 expose((a: number, b: number) => a + b, figmaCoreEndpoint());
 ```
 
----
+
 **figmaUIEndpoint:**
 
 ```typescript
@@ -255,7 +253,6 @@ Features:
 
 Chrome Extensions 中的通信形式主要为两种，[长会话](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect)与[简单一次性请求](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple)，就 comlink 使用来说更推荐长会话，其更简单也更便于理解。注意在使用扩展之间通信时需要先在  `manifest.json` 配置 [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/)。
 
----
 
 **chromeRuntimePortEndpoint:**
 
@@ -335,7 +332,7 @@ chrome.runtime.onConnectExternal.addListener((port) => {
     }
 });
 ```
----
+
 
 **chromeRuntimeMessageEndpoint:**
 
@@ -471,7 +468,6 @@ Features:
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
----
 **socketIoEndpoint:**
 
 ```typescript

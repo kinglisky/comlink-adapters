@@ -61,7 +61,6 @@ Features:
 
 Support for `createEndpoint` is provided, but it is not recommended to use. The internal implementation bridges MessagePort and MessagePortMain, which results in poor efficiency.
 
----
 
 **electronMainEndpoint:**
 
@@ -117,7 +116,7 @@ ipcMain.on('init-comlink-endponit:syn', (event: IpcMainEvent) => {
     senderWeakMap.set(event.sender, true);
 });
 ```
----
+
 
 **electronRendererEndpoint：** 
 
@@ -182,7 +181,7 @@ Features:
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
----
+
 **figmaCoreEndpoint:**
 
 ```typescript
@@ -206,7 +205,7 @@ import { figmaCoreEndpoint } from 'comlink-adapters';
 expose((a: number, b: number) => a + b, figmaCoreEndpoint());
 ```
 
----
+
 **figmaUIEndpoint:**
 
 ```typescript
@@ -253,7 +252,6 @@ Features:
 
 The two main types of communication in Chrome Extensions are [long-lived connections](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect) and [simple one-off requests](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple). For the use of comlink, it is more recommended to use long-lived connections, which are simpler and easier to understand. Note that when using communication between extensions, you need to configure [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/) in `manifest.json` first.
 
----
 
 **chromeRuntimePortEndpoint:**
 
@@ -333,7 +331,6 @@ chrome.runtime.onConnectExternal.addListener((port) => {
     }
 });
 ```
----
 
 **chromeRuntimeMessageEndpoint:**
 
@@ -452,6 +449,7 @@ chrome.runtime.onMessageExternal.addListener(
     }
 );
 ```
+---
 
 ### Socket.io Adapters
 
@@ -470,7 +468,6 @@ Features:
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
----
 **socketIoEndpoint:**
 
 ```typescript
