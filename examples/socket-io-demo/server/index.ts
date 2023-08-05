@@ -15,7 +15,7 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-    exposeCounter(socketIoEndpoint(socket));
+    exposeCounter(socketIoEndpoint({ socket }));
     console.log('socket connected');
 });
 

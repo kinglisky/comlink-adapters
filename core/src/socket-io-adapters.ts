@@ -1,6 +1,10 @@
 import { proxyMarker, ProxyMarked, transferHandlers } from 'comlink';
 import { isObject } from './utils';
-import { MESSAGE_EVENT_NAME, MESSAGE_EVENT_ERROR } from './constant';
+import {
+    MESSAGE_CHANNEL_NAME,
+    MESSAGE_EVENT_NAME,
+    MESSAGE_EVENT_ERROR,
+} from './constant';
 
 import type { Endpoint, TransferHandler } from 'comlink';
 import type { Socket as ServerSocket } from 'socket.io';
@@ -24,13 +28,14 @@ const proxyTransferHandler: TransferHandler<object, any> = {
     },
 };
 
-export function socketIoEndpoint(
-    socket: ServerSocket | ClientSocket,
-    messageChannel: string = 'message'
-): Endpoint {
+export function socketIoEndpoint(options: {
+    socket: ServerSocket | ClientSocket;
+    messageChannel?: string;
+}): Endpoint {
     transferHandlers.set('proxy', proxyTransferHandler);
 
     const listeners = new WeakMap();
+    const { socket, messageChannel = MESSAGE_CHANNEL_NAME } = options;
 
     return {
         postMessage: (message: any, _transfer: MessagePort[]) => {

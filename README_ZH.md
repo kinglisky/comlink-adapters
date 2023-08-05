@@ -27,7 +27,8 @@
 
 - [x] [Electron](https://www.electronjs.org/)
 - [x] [Figma](https://www.figma.com/plugin-docs/)
-- [x] [Chrome extensions](https://developer.chrome.com/docs/extensions/)
+- [x] [Chrome Extensions](https://developer.chrome.com/docs/extensions/)
+- [x] [Socket.IO](https://socket.io/)
 
 欢迎提 [issues](https://github.com/kinglisky/comlink-adapters/issues) 或者一起新增其他应用平台的适配器。
 
@@ -193,7 +194,7 @@ interface FigmaCoreEndpointOptions {
 }
 
 interface figmaCoreEndpoint {
-    (params: FigmaCoreEndpointParams): Endpoint
+    (options: FigmaCoreEndpointOptions): Endpoint
 }
 ```
 - **origin:** [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage) 的 `origin` 配置，默认为 `*`。
@@ -216,7 +217,7 @@ interface FigmaUIEndpointOptions {
 }
 
 interface figmaUIEndpoint {
-    (params: FigmaUIEndpointOptions): Endpoint
+    (options: FigmaUIEndpointOptions): Endpoint
 }
 ```
 - **origin:** UI iframe 中 [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) 的 `targetOrigin` 配置，默认为 `*`
@@ -451,6 +452,74 @@ chrome.runtime.onMessageExternal.addListener(
     }
 );
 ```
+---
+
+### Socket.io Adapters
+
+Adapters：
+- `socketIoEndpoint` 用于 socket.io 在客户端与服务端创建 `Endpoint` 对象。
+
+Features:
+| Feature | Support | Example | Description |
+| :-----| :----- | :----- | :----- |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ❌ | `await new ProxyObj();` | 不支持 MessagePort 传递 |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | 同上 |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| 同上 |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
+
+---
+**socketIoEndpoint:**
+
+```typescript
+interface SocketIoEndpointOptions {
+    socket: ServerSocket | ClientSocket;
+    messageChannel?: string;
+}
+
+interface socketIoEndpoint {
+    (options: SocketIoEndpointOptions): Endpoint
+}
+```
+- **socket:** `socket.io` 或 `socket.io-client` 创建的 socket 实例。
+- **messageChannel:** 用于监听 comlink 的消息事件名称，默认为 `__COMLINK_MESSAGE_CHANNEL__`。
+
+```typescript
+// server.ts
+import Koa from 'koa';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { expose } from 'comlink';
+import { socketIoEndpoint } from '@socket/adapters';
+
+const app = new Koa();
+const httpServer = createServer(app.callback());
+const io = new Server(httpServer, {});
+
+io.on('connection', (socket) => {
+    expose((a: number, b: number) => a + b, socketIoEndpoint({ socket }));
+});
+
+httpServer.listen(3000);
+```
+
+```typescript
+// client.ts
+import { io } from 'socket.io-client';
+import { wrap } from 'comlink';
+import { socketIoEndpoint } from 'comlink-adapters';
+
+export async function useSocketIo() {
+    const socket = io('ws://localhost:3000');
+    const add = wrap<(a: number, b: number) => number>(socketIoEndpoint({ socket }));
+    const sum = await add(1, 2);
+    // output: 3
+}
+```
+---
 
 ## 开发
 

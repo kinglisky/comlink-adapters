@@ -7,7 +7,7 @@ export function setupTestCounter(
     output: HTMLPreElement
 ) {
     const socket = io('ws://localhost:3000');
-    const testCounter = wrapCounter(socketIoEndpoint(socket));
+    const testCounter = wrapCounter(socketIoEndpoint({ socket }));
 
     const startTestCounter = async () => {
         output.innerHTML = 'Test Counter Cases:';
