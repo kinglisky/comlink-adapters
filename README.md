@@ -25,6 +25,7 @@ The currently implemented adapters are as follows:
 - [x] [Electron](https://www.electronjs.org/)
 - [x] [Figma](https://www.figma.com/plugin-docs/)
 - [x] [Chrome extensions](https://developer.chrome.com/docs/extensions/)
+- [x] [Socket.IO](https://socket.io/)
 
 We welcome you to raise [issues](https://github.com/kinglisky/comlink-adapters/issues) or to contribute to the development of adapters for other application platforms.
 
@@ -191,7 +192,7 @@ interface FigmaCoreEndpointOptions {
 }
 
 interface figmaCoreEndpoint {
-    (params: FigmaCoreEndpointParams): Endpoint
+    (options: FigmaCoreEndpointOptions): Endpoint
 }
 ```
 - **origin:** Configuration of `origin` in [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage), default is `*`.
@@ -214,7 +215,7 @@ interface FigmaUIEndpointOptions {
 }
 
 interface figmaUIEndpoint {
-    (params: FigmaUIEndpointOptions): Endpoint
+    (options: FigmaUIEndpointOptions): Endpoint
 }
 ```
 - **origin:** `targetOrigin` configuration in [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) of UI iframe, default is `*`
@@ -451,6 +452,73 @@ chrome.runtime.onMessageExternal.addListener(
     }
 );
 ```
+
+### Socket.io Adapters
+
+Adapters:
+- `socketIoEndpoint` is used to create an `Endpoint` object on the client and server side with socket.io.
+
+Features:
+| Feature | Support | Example | Description |
+| :-----| :----- | :----- | :----- |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ❌ | `await new ProxyObj();` | Passing of MessagePort is not supported |
+| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | As above |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| As above |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
+
+---
+**socketIoEndpoint:**
+
+```typescript
+interface SocketIoEndpointOptions {
+    socket: ServerSocket | ClientSocket;
+    messageChannel?: string;
+}
+
+interface socketIoEndpoint {
+    (options: SocketIoEndpointOptions): Endpoint
+}
+```
+- **socket:** The socket instance created by `socket.io` or `socket.io-client`.
+- **messageChannel:** The event name used for sending/listening to comlink messages through socket instances. Different endpoints can be created by different messageChannel. The default is __COMLINK_MESSAGE_CHANNEL__.
+
+```typescript
+// server.ts
+import Koa from 'koa';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { expose } from 'comlink';
+import { socketIoEndpoint } from '@socket/adapters';
+
+const app = new Koa();
+const httpServer = createServer(app.callback());
+const io = new Server(httpServer, {});
+
+io.on('connection', (socket) => {
+    expose((a: number, b: number) => a + b, socketIoEndpoint({ socket }));
+});
+
+httpServer.listen(3000);
+```
+
+```typescript
+// client.ts
+import { io } from 'socket.io-client';
+import { wrap } from 'comlink';
+import { socketIoEndpoint } from 'comlink-adapters';
+
+export async function useSocketIo() {
+    const socket = io('ws://localhost:3000');
+    const add = wrap<(a: number, b: number) => number>(socketIoEndpoint({ socket }));
+    const sum = await add(1, 2);
+    // output: 3
+}
+```
+---
 
 ## Development
 

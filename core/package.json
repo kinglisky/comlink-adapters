@@ -1,7 +1,7 @@
 {
     "name": "comlink-adapters",
     "private": false,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Implementation of comlink adapters for different application platforms",
     "keywords": [
         "comlink",
@@ -10,6 +10,7 @@
         "electron",
         "figma",
         "chrome extensions",
+        "socket.io",
         "proxy",
         "MessagePort",
         "MessageChannel"
@@ -47,6 +48,8 @@
         "@types/chrome": "^0.0.237",
         "comlink": "^4.4.1",
         "electron": "^23.1.1",
+        "socket.io": "^4.7.2",
+        "socket.io-client": "^4.7.2",
         "typescript": "^5.0.2",
         "vite": "^4.3.2",
         "vite-plugin-dts": "^2.3.0"
