@@ -484,7 +484,7 @@ interface socketIoEndpoint {
 }
 ```
 - **socket:** The socket instance created by `socket.io` or `socket.io-client`.
-- **messageChannel:** The event name used to listen to comlink messages, default is `__COMLINK_MESSAGE_CHANNEL__`.
+- **messageChannel:** The event name used for sending/listening to comlink messages through socket instances. Different endpoints can be created by different messageChannel. The default is __COMLINK_MESSAGE_CHANNEL__.
 
 ```typescript
 // server.ts

@@ -485,7 +485,7 @@ interface socketIoEndpoint {
 }
 ```
 - **socket:** `socket.io` 或 `socket.io-client` 创建的 socket 实例。
-- **messageChannel:** 用于监听 comlink 的消息事件名称，默认为 `__COMLINK_MESSAGE_CHANNEL__`。
+- **messageChannel:** 用于 socket 实例发送/监听 comlink 消息所用事件名称，可以通过不同 `messageChannel` 创建不同的 endpoint，默认为 `__COMLINK_MESSAGE_CHANNEL__`。
 
 ```typescript
 // server.ts
