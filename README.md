@@ -508,12 +508,12 @@ import { io } from 'socket.io-client';
 import { wrap } from 'comlink';
 import { socketIoEndpoint } from 'comlink-adapters';
 
-export async function useSocketIo() {
+(async function() {
     const socket = io('ws://localhost:3000');
     const add = wrap<(a: number, b: number) => number>(socketIoEndpoint({ socket }));
     const sum = await add(1, 2);
     // output: 3
-}
+})();
 ```
 ---
 
