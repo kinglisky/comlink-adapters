@@ -462,9 +462,9 @@ Features:
 | set | ✅ | `await proxyObj.someValue;` | |
 | get | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
-| construct | ❌ | `await new ProxyObj();` | Passing of MessagePort is not supported |
-| proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | As above |
-| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| As above |
+| construct | ✅ | `await new ProxyObj();` |  |
+| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` |  |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Passing of MessagePort is not supported |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
 
