@@ -144,16 +144,16 @@ import type { Remote } from 'comlink';
 
 type Add = (a: number, b: number) => number;
 
-(async function() {
+(async function () {
     const useRemoteAdd = () => {
-    return new Promise<Remote<Add>>((resolve) => {
-        ipcRenderer.on('init-comlink-endponit:ack', () => {
-            resolve(wrap<Add>(electronRendererEndpoint({ ipcRenderer })));
-        });
+        return new Promise<Remote<Add>>((resolve) => {
+            ipcRenderer.on('init-comlink-endponit:ack', () => {
+                resolve(wrap<Add>(electronRendererEndpoint({ ipcRenderer })));
+            });
 
-        ipcRenderer.postMessage('init-comlink-endponit:syn', null);
-    });
-};
+            ipcRenderer.postMessage('init-comlink-endponit:syn', null);
+        });
+    };
     const remoteAdd = await useRemoteAdd();
     const sum = await remoteAdd(1, 2);
     // output: 3
