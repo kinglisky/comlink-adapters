@@ -2,7 +2,7 @@ import {
     chromeRuntimePortEndpoint,
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
-import { wrapCounter } from '@examples/test';
+import { wrapCounter } from '@examples/test-case';
 
 import './style.css';
 

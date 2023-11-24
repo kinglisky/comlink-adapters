@@ -16,7 +16,7 @@
         "vite-plugin-singlefile": "^0.13.5"
     },
     "dependencies": {
-        "@examples/test": "workspace:*",
+        "@examples/test-case": "workspace:*",
         "comlink": "^4.4.1",
         "comlink-adapters": "workspace:*"
     }

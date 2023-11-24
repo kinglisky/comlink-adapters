@@ -1,4 +1,4 @@
-# socket io demo
+# web socket demo
 
 ## start
 

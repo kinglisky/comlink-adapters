@@ -2,7 +2,7 @@ import Koa from 'koa';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketIoEndpoint } from 'comlink-adapters';
-import { exposeCounter } from '@examples/test';
+import { exposeCounter } from '@examples/test-case';
 
 const app = new Koa();
 const httpServer = createServer(app.callback());

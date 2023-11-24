@@ -2,7 +2,7 @@ import {
     chromeRuntimePortEndpoint,
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
-import { exposeCounter } from '@examples/test';
+import { exposeCounter } from '@examples/test-case';
 
 import { EXT_A_ID } from './constant';
 

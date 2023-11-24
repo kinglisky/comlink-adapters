@@ -1,0 +1,24 @@
+{
+    "name": "@examples/node-process-demo",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "main": "index.ts",
+    "scripts": {
+        "dev": "ts-node index.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@examples/test-case": "workspace:*",
+        "comlink": "^4.4.1",
+        "comlink-adapters": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^20.9.4",
+        "ts-node": "^10.9.1",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.3.2"
+    }
+}

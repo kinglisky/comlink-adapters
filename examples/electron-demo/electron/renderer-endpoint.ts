@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { electronRendererEndpoint } from 'comlink-adapters';
-import { wrapCounter } from '@examples/test';
+import { wrapCounter } from '@examples/test-case';
 
 export const useRendererCounter = () => {
     return new Promise<(output: HTMLPreElement) => Promise<string>>(

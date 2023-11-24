@@ -45,14 +45,14 @@ export const wrapCounter = (endpoint: Endpoint) => {
     const remoteContent = wrap<typeof exposeContent>(endpoint);
     const testCases = [
         {
-            message: 'GET:',
+            message: 'GET',
             case: async () => {
                 const res = await remoteContent.counterInstance.count;
                 expect(res).to.equal(0);
             },
         },
         {
-            message: 'SET:',
+            message: 'SET',
             case: async () => {
                 // @ts-ignore
                 await (remoteContent.counterInstance.count = 1);
@@ -65,7 +65,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
             },
         },
         {
-            message: 'APPLY:',
+            message: 'APPLY',
             case: async () => {
                 await remoteContent.counterInstance.add();
                 const v1 = await remoteContent.counterInstance.count;
@@ -76,7 +76,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
             },
         },
         {
-            message: 'CONSTRUCT:',
+            message: 'CONSTRUCT',
             case: async () => {
                 const counterInstance =
                     await new remoteContent.counterConstructor();
@@ -85,7 +85,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
             },
         },
         {
-            message: 'PROXY FUNCTION:',
+            message: 'PROXY FUNCTION',
             case: async () => {
                 await remoteContent.counterInstance.use(
                     proxy((count) => {
@@ -95,7 +95,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
             },
         },
         {
-            message: 'ENDPOINT:',
+            message: 'ENDPOINT',
             case: async () => {
                 const port = await remoteContent[createEndpoint]();
                 if (port instanceof MessagePort) {
@@ -112,7 +112,7 @@ export const wrapCounter = (endpoint: Endpoint) => {
             },
         },
         {
-            message: 'RELEASE:',
+            message: 'RELEASE',
             case: async () => {
                 remoteContent[releaseProxy]();
                 let msg = '';
@@ -135,11 +135,14 @@ export const wrapCounter = (endpoint: Endpoint) => {
                 .case()
                 .then(() => 'success')
                 .catch((error) => {
-                    console.error(item.message, error.message);
+                    console.error(
+                        `catch [${item.message}] error:`,
+                        error.message
+                    );
                     return `failure(${error.message || ''})`;
                 });
 
-            const info = `${msg}\n${item.message} ${res}`;
+            const info = `${msg}\ntest --> ${item.message}: ${res}`;
             if (output) {
                 output.innerHTML = info;
             }
