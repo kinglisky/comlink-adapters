@@ -4,6 +4,7 @@
 Implementation of comlink adapters for different application platforms
 
 [English](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
+
 </div>
 
 ## Introduction
@@ -16,16 +17,18 @@ The core implementation of [comlink](https://github.com/GoogleChromeLabs/comlink
 
 Some advanced features of comlink require the use of [MessageChannel](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel) and [MessagePort](https://developer.mozilla.org/en-US/docs/Web/API/MessagePort) for transmission, and some platform adapters may not support these features. These advanced features include:
 
-- Constructing remote proxy objects with `new ProxyTarget()`
-- [Comlink.proxy](https://github.com/GoogleChromeLabs/comlink#comlinktransfervalue-transferables-and-comlinkproxyvalue)
-- [Comlink.createEndpoint](https://github.com/GoogleChromeLabs/comlink#comlinkcreateendpoint)
+-   Constructing remote proxy objects with `new ProxyTarget()`
+-   [Comlink.proxy](https://github.com/GoogleChromeLabs/comlink#comlinktransfervalue-transferables-and-comlinkproxyvalue)
+-   [Comlink.createEndpoint](https://github.com/GoogleChromeLabs/comlink#comlinkcreateendpoint)
 
 The currently implemented adapters are as follows:
 
-- [x] [Electron](https://www.electronjs.org/)
-- [x] [Figma](https://www.figma.com/plugin-docs/)
-- [x] [Chrome extensions](https://developer.chrome.com/docs/extensions/)
-- [x] [Socket.IO](https://socket.io/)
+-   [x] [Electron](#electron-adapters)
+-   [x] [Figma](#figma-adapters)
+-   [x] [Chrome Extensions](#chrome-extensions-adapters)
+-   [x] [Node Process](#node-process-adapters)
+-   [x] [Socket.IO](#socketio-adapters)
+-   [x] [WebSocket](#websocket-adapters)
 
 We welcome you to raise [issues](https://github.com/kinglisky/comlink-adapters/issues) or to contribute to the development of adapters for other application platforms.
 
@@ -45,8 +48,9 @@ pnpm add comlink comlink-adapters
 ### Electron Adapters
 
 Adapters:
-- `electronMainEndpoint` is used to create `Endpoint` objects in the main process.
-- `electronRendererEndpoint` is used to create `Endpoint` objects in the rendering process.
+
+-   `electronMainEndpoint` is used to create `Endpoint` objects in the main process.
+-   `electronRendererEndpoint` is used to create `Endpoint` objects in the rendering process.
 
 Features:
 | Feature | Support | Example | Description |
@@ -61,7 +65,6 @@ Features:
 
 Support for `createEndpoint` is provided, but it is not recommended to use. The internal implementation bridges MessagePort and MessagePortMain, which results in poor efficiency.
 
-
 **electronMainEndpoint:**
 
 ```typescript
@@ -73,13 +76,14 @@ interface ElectronMainEndpointOptions {
 }
 
 interface electronMainEndpoint {
-  (options: ElectronMainEndpointOptions): Endpoint;
+    (options: ElectronMainEndpointOptions): Endpoint;
 }
 ```
-- **sender：** The renderer WebContents object to communicate with.
-- **ipcMain：** The IpcMain object in Electron.
-- **messageChannelConstructor：** Constructor of MessageChannel, using MessageChannelMain in the main process.
-- **channelName：** The IPC channel identifier, default is `__COMLINK_MESSAGE_CHANNEL__`. Multiple pairs of comlink endpoints can be created via channelName.
+
+-   **sender：** The renderer WebContents object to communicate with.
+-   **ipcMain：** The IpcMain object in Electron.
+-   **messageChannelConstructor：** Constructor of MessageChannel, using MessageChannelMain in the main process.
+-   **channelName：** The IPC channel identifier, default is `__COMLINK_MESSAGE_CHANNEL__`. Multiple pairs of comlink endpoints can be created via channelName.
 
 ```typescript
 // main.ts
@@ -117,8 +121,7 @@ ipcMain.on('init-comlink-endponit:syn', (event: IpcMainEvent) => {
 });
 ```
 
-
-**electronRendererEndpoint：** 
+**electronRendererEndpoint：**
 
 ```typescript
 interface ElectronRendererEndpointOptions {
@@ -127,12 +130,12 @@ interface ElectronRendererEndpointOptions {
 }
 
 interface electronRendererEndpoint {
-  (options: ElectronRendererEndpointOptions): Endpoint;
+    (options: ElectronRendererEndpointOptions): Endpoint;
 }
 ```
 
-- **ipcRenderer：** The IpcRenderer object in Electron.
-- **channelName：** IPC channel identifier.
+-   **ipcRenderer：** The IpcRenderer object in Electron.
+-   **channelName：** IPC channel identifier.
 
 ```typescript
 // renderer.ts
@@ -158,7 +161,6 @@ type Add = (a: number, b: number) => number;
     const sum = await remoteAdd(1, 2);
     // output: 3
 })();
-
 ```
 
 ---
@@ -166,8 +168,9 @@ type Add = (a: number, b: number) => number;
 ### Figma Adapters
 
 Adapters:
-- `figmaCoreEndpoint` is used to create `Endpoint` objects in the main thread of the Figma sandbox.
-- `figmaUIEndpoint` is used to create `Endpoint` objects in the Figma UI process.
+
+-   `figmaCoreEndpoint` is used to create `Endpoint` objects in the main thread of the Figma sandbox.
+-   `figmaUIEndpoint` is used to create `Endpoint` objects in the Figma UI process.
 
 Features:
 | Feature | Support | Example | Description |
@@ -180,8 +183,6 @@ Features:
 | createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Same as above |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
-
-
 **figmaCoreEndpoint:**
 
 ```typescript
@@ -191,11 +192,12 @@ interface FigmaCoreEndpointOptions {
 }
 
 interface figmaCoreEndpoint {
-    (options: FigmaCoreEndpointOptions): Endpoint
+    (options: FigmaCoreEndpointOptions): Endpoint;
 }
 ```
-- **origin:** Configuration of `origin` in [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage), default is `*`.
-- **checkProps:** Used to check the origin in `props` returned by [figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on).
+
+-   **origin:** Configuration of `origin` in [figma.ui.postMessage](https://www.figma.com/plugin-docs/api/properties/figma-ui-postmessage), default is `*`.
+-   **checkProps:** Used to check the origin in `props` returned by [figma.ui.on('message', (msg, props) => {})](https://www.figma.com/plugin-docs/api/properties/figma-ui-on).
 
 ```typescript
 // core.ts
@@ -205,7 +207,6 @@ import { figmaCoreEndpoint } from 'comlink-adapters';
 expose((a: number, b: number) => a + b, figmaCoreEndpoint());
 ```
 
-
 **figmaUIEndpoint:**
 
 ```typescript
@@ -214,29 +215,32 @@ interface FigmaUIEndpointOptions {
 }
 
 interface figmaUIEndpoint {
-    (options: FigmaUIEndpointOptions): Endpoint
+    (options: FigmaUIEndpointOptions): Endpoint;
 }
 ```
-- **origin:** `targetOrigin` configuration in [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) of UI iframe, default is `*`
+
+-   **origin:** `targetOrigin` configuration in [window:postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) of UI iframe, default is `*`
 
 ```typescript
 // ui.ts
 import { wrap } from 'comlink';
 import { figmaUIEndpoint } from 'comlink-adapters';
 
-(async function() {
+(async function () {
     const add = wrap<(a: number, b: number) => number>(figmaUIEndpoint());
     const sum = await add(1, 2);
     // output: 3
 })();
 ```
+
 ---
 
 ### Chrome Extensions Adapters
 
 Adapters:
-- `chromeRuntimePortEndpoint` is used to create `Endpoint` objects for extensions based on long-lived connections.
-- `chromeRuntimeMessageEndpoint` is used to create `Endpoint` objects for extensions based on simple one-off requests.
+
+-   `chromeRuntimePortEndpoint` is used to create `Endpoint` objects for extensions based on long-lived connections.
+-   `chromeRuntimeMessageEndpoint` is used to create `Endpoint` objects for extensions based on simple one-off requests.
 
 Features:
 | Feature | Support | Example | Description |
@@ -249,15 +253,13 @@ Features:
 | createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Same as above |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
 
-
 The two main types of communication in Chrome Extensions are [long-lived connections](https://developer.chrome.com/docs/extensions/mv3/messaging/#connect) and [simple one-off requests](https://developer.chrome.com/docs/extensions/mv3/messaging/#simple). For the use of comlink, it is more recommended to use long-lived connections, which are simpler and easier to understand. Note that when using communication between extensions, you need to configure [externally_connectable](https://developer.chrome.com/docs/apps/manifest/externally_connectable/) in `manifest.json` first.
-
 
 **chromeRuntimePortEndpoint:**
 
 ```typescript
 interface chromeRuntimePortEndpoint {
-    (port: chrome.runtime.Port): Endpoint
+    (port: chrome.runtime.Port): Endpoint;
 }
 ```
 
@@ -340,8 +342,8 @@ interface chromeRuntimeMessageEndpoint {
 }
 ```
 
-- **tabId** The tab id of the page to communicate with
-- **extensionId** The id of the extension to communicate with
+-   **tabId** The tab id of the page to communicate with
+-   **extensionId** The id of the extension to communicate with
 
 If neither `tabId` nor `extensionId` is provided, it means that the communication is between internal pages of the plugin.
 
@@ -388,9 +390,7 @@ import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
 
 ```typescript
 // background
-import {
-
- expose } from 'comlink';
+import { expose } from 'comlink';
 import { chromeRuntimeMessageEndpoint } from 'comlink-adapters';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -449,12 +449,73 @@ chrome.runtime.onMessageExternal.addListener(
     }
 );
 ```
+
+---
+
+### Node Process Adapters
+
+Adapters:
+
+-   `nodeProcessEndpoint`: Used for creating an `Endpoint` object within a node process.
+
+Features:
+| Feature | Support | Example | Description |
+| :------| :------ | :------ | :------ |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ✅ | `await new ProxyObj();` | |
+| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Not supported for MessagePort passing |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
+**nodeProcessEndpoint:**
+
+```typescript
+interface nodeProcessEndpoint {
+    (options: {
+        nodeProcess: ChildProcess | NodeJS.Process;
+        messageChannel?: string;
+    }): Endpoint;
+}
+```
+
+-   **nodeProcess:** Refers to a [node process](https://nodejs.org/api/process.html) or [node child_process](https://nodejs.org/api/child_process.html).
+-   **messageChannel:** Used to separate channels in process communication. Different endpoints can be created with different `messageChannel`, defaulting to `__COMLINK_MESSAGE_CHANNEL__`.
+
+```typescript
+// child.ts
+import { nodeProcessEndpoint } from 'comlink-adapters';
+import { expose } from 'comlink';
+
+expose(
+    (a: number, b: number) => a + b,
+    nodeProcessEndpoint({ nodeProcess: process })
+);
+```
+
+```typescript
+// main.ts
+import { fork } from 'node:child_process';
+import { nodeProcessEndpoint } from 'comlink-adapters';
+import { wrap } from 'comlink';
+
+(async function () {
+    const add = wrap<(a: number, b: number) => number>(
+        nodeProcessEndpoint({ nodeProcess: fork('child.ts') })
+    );
+    const sum = await add(1, 2);
+    // output: 3
+})();
+```
+
 ---
 
 ### Socket.io Adapters
 
 Adapters:
-- `socketIoEndpoint` is used to create an `Endpoint` object on the client and server side with socket.io.
+
+-   `socketIoEndpoint` is used to create an `Endpoint` object on the client and server side with socket.io.
 
 Features:
 | Feature | Support | Example | Description |
@@ -462,11 +523,10 @@ Features:
 | set | ✅ | `await proxyObj.someValue;` | |
 | get | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
-| construct | ✅ | `await new ProxyObj();` |  |
-| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` |  |
+| construct | ✅ | `await new ProxyObj();` | |
+| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
 | createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Passing of MessagePort is not supported |
 | release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
-
 
 **socketIoEndpoint:**
 
@@ -477,11 +537,12 @@ interface SocketIoEndpointOptions {
 }
 
 interface socketIoEndpoint {
-    (options: SocketIoEndpointOptions): Endpoint
+    (options: SocketIoEndpointOptions): Endpoint;
 }
 ```
-- **socket:** The socket instance created by `socket.io` or `socket.io-client`.
-- **messageChannel:** The event name used for sending/listening to comlink messages through socket instances. Different endpoints can be created by different messageChannel. The default is __COMLINK_MESSAGE_CHANNEL__.
+
+-   **socket:** The socket instance created by `socket.io` or `socket.io-client`.
+-   **messageChannel:** The event name used for sending/listening to comlink messages through socket instances. Different endpoints can be created by different messageChannel. The default is **COMLINK_MESSAGE_CHANNEL**.
 
 ```typescript
 // server.ts
@@ -508,13 +569,83 @@ import { io } from 'socket.io-client';
 import { wrap } from 'comlink';
 import { socketIoEndpoint } from 'comlink-adapters';
 
-(async function() {
+(async function () {
     const socket = io('ws://localhost:3000');
-    const add = wrap<(a: number, b: number) => number>(socketIoEndpoint({ socket }));
+    const add = wrap<(a: number, b: number) => number>(
+        socketIoEndpoint({ socket })
+    );
     const sum = await add(1, 2);
     // output: 3
 })();
 ```
+
+---
+
+### WebSocket Adapters Documentation
+
+Adapters:
+
+-   `webSocketEndpoint`: Used for creating an `Endpoint` object with WebSocket.
+
+Features:
+| Feature | Support | Example | Description |
+| :------| :------ | :------ | :------ |
+| set | ✅ | `await proxyObj.someValue;` | |
+| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| apply | ✅ | `await proxyObj.applySomeMethod();` | |
+| construct | ✅ | `await new ProxyObj();` | |
+| proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
+| createEndpoint | ❌ | `proxyObj[comlink.createEndpoint]();`| Not supported for MessagePort passing |
+| release | ✅ | `proxyObj[comlink.releaseProxy]();`| |
+
+**webSocketEndpoint:**
+
+```typescript
+import type { WebSocket as LibWebSocket } from 'ws';
+
+interface webSocketEndpoint {
+    (options: {
+        webSocket: WebSocket | LibWebSocket;
+        messageChannel?: string;
+    }): Endpoint;
+}
+```
+
+-   **webSocket:** A [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) instance or one created using [ws](https://github.com/websockets/ws) library.
+-   **messageChannel:** Used to separate channels in WebSocket communication. Different endpoints can be created with different `messageChannel`, defaulting to `__COMLINK_MESSAGE_CHANNEL__`.
+
+```typescript
+// server.ts
+import { WebSocketServer } from 'ws';
+import { expose } from 'comlink';
+import { webSocketEndpoint } from 'comlink-adapters';
+
+const wss = new WebSocketServer({ port: 8888 });
+
+wss.addListener('connection', (ws: WebSocket) => {
+    expose(
+        (a: number, b: number) => a + b,
+        webSocketEndpoint({ webSocket: ws })
+    );
+});
+```
+
+```typescript
+// client.ts
+import WebSocket from 'ws';
+import { webSocketEndpoint } from 'comlink-adapters';
+import { wrap } from 'comlink';
+
+(async function () {
+    const ws = new WebSocket('ws://localhost:8888');
+    const add = wrap<(a: number, b: number) => number>(
+        webSocketEndpoint({ webSocket: ws })
+    );
+    const sum = await add(1, 2);
+    // output: 3
+})();
+```
+
 ---
 
 ## Development
@@ -526,6 +657,7 @@ pnpm i
 ```
 
 Development
+
 ```bash
 cd core
 pnpm run dev

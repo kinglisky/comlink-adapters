@@ -2,7 +2,7 @@ import {
     chromeRuntimePortEndpoint,
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
-import { exposeCounter, wrapCounter } from '@examples/test';
+import { exposeCounter, wrapCounter } from '@examples/test-case';
 
 chrome.runtime.onInstalled.addListener(async (details) => {
     console.log('A chrome.runtime.onInstalled', details);

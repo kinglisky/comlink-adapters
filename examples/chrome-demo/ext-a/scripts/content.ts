@@ -2,7 +2,7 @@ import {
     chromeRuntimePortEndpoint,
     chromeRuntimeMessageEndpoint,
 } from 'comlink-adapters';
-import { wrapCounter, exposeCounter } from '@examples/test';
+import { wrapCounter, exposeCounter } from '@examples/test-case';
 import { EXT_B_ID } from './constant';
 
 const log = (msg: string) => {

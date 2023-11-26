@@ -10,13 +10,12 @@ import {
     MESSAGE_CHANNEL_NAME,
     MESSAGE_EVENT_NAME,
     MESSAGE_EVENT_ERROR,
+    PROXY_MESSAGE_CHANNEL_MARKER,
 } from './constant';
 
 import type { Endpoint, TransferHandler } from 'comlink';
 import type { Socket as ServerSocket } from 'socket.io';
 import type { Socket as ClientSocket } from 'socket.io-client';
-
-const PROXY_MESSAGE_CHANNEL_ID = '__PROXY_MESSAGE_CHANNEL_ID__';
 
 const socketIOTransferHandlers: WeakMap<
     ServerSocket | ClientSocket,
@@ -39,10 +38,13 @@ const createProxyTransferHandler = (socket: ServerSocket | ClientSocket) => {
                 socketIoEndpoint({
                     socket,
                     messageChannel: proxyMessageChannelID,
-                })
+                }),
             );
 
-            return [{ [PROXY_MESSAGE_CHANNEL_ID]: proxyMessageChannelID }, []];
+            return [
+                { [PROXY_MESSAGE_CHANNEL_MARKER]: proxyMessageChannelID },
+                [],
+            ];
         },
         deserialize(target) {
             return wrap(
@@ -50,9 +52,9 @@ const createProxyTransferHandler = (socket: ServerSocket | ClientSocket) => {
                     socket,
                     messageChannel: Reflect.get(
                         target,
-                        PROXY_MESSAGE_CHANNEL_ID
+                        PROXY_MESSAGE_CHANNEL_MARKER,
                     ),
-                })
+                }),
             );
         },
     };
@@ -68,7 +70,7 @@ const initTransferHandlers = (socket: ServerSocket | ClientSocket) => {
     if (!socketIOTransferHandlers.has(socket)) {
         socketIOTransferHandlers.set(
             socket,
-            createProxyTransferHandler(socket)
+            createProxyTransferHandler(socket),
         );
 
         socket.on('disconnect', () => {

@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 import { socketIoEndpoint } from 'comlink-adapters';
-import { wrapCounter } from '@examples/test';
+import { wrapCounter } from '@examples/test-case';
 
 export function setupTestCounter(
     button: HTMLButtonElement,

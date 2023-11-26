@@ -1,6 +1,6 @@
 import { ipcMain, MessageChannelMain } from 'electron';
 import { electronMainEndpoint } from 'comlink-adapters';
-import { exposeCounter } from '@examples/test';
+import { exposeCounter } from '@examples/test-case';
 
 import type { WebContents, IpcMainEvent } from 'electron';
 

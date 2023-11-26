@@ -1,5 +1,5 @@
 import { figmaUIEndpoint } from 'comlink-adapters';
-import { wrapCounter } from '@examples/test';
+import { wrapCounter } from '@examples/test-case';
 
 export function setupTestCounter(
     button: HTMLButtonElement,

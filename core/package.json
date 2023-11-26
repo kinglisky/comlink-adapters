@@ -1,7 +1,7 @@
 {
     "name": "comlink-adapters",
     "private": false,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Implementation of comlink adapters for different application platforms",
     "keywords": [
         "comlink",
@@ -46,6 +46,8 @@
     "devDependencies": {
         "@figma/plugin-typings": "^1.63.0",
         "@types/chrome": "^0.0.237",
+        "@types/node": "^20.8.10",
+        "@types/ws": "^8.5.10",
         "comlink": "^4.4.1",
         "electron": "^23.1.1",
         "socket.io": "^4.7.2",
