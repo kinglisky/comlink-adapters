@@ -581,7 +581,7 @@ import { socketIoEndpoint } from 'comlink-adapters';
 
 ---
 
-### WebSocket Adapters Documentation
+### WebSocket Adapters
 
 Adapters:
 
