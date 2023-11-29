@@ -4,4 +4,4 @@ packages:
     - 'examples/socket-io-demo/**'
     - 'examples/chrome-demo/**'
     - 'examples/**'
-    - 'articles'
+    - 'slidev'
