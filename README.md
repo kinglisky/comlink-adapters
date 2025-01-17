@@ -55,8 +55,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :-----| :----- | :----- | :----- |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ✅ | `await new ProxyObj();` | |
 | proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
@@ -175,8 +175,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :-----| :----- | :----- | :----- |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ❌ | `await new ProxyObj();` | The Core thread does not support MessageChannel, and the MessagePort cannot be transferred between Core and UI threads |
 | proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | Same as above |
@@ -245,8 +245,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :-----| :----- | :----- | :----- |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ❌ | `await new ProxyObj();` | API does not support passing MessagePort |
 | proxy function | ❌ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | Same as above |
@@ -461,8 +461,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :------| :------ | :------ | :------ |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ✅ | `await new ProxyObj();` | |
 | proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
@@ -520,8 +520,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :-----| :----- | :----- | :----- |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ✅ | `await new ProxyObj();` | |
 | proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
@@ -590,8 +590,8 @@ Adapters:
 Features:
 | Feature | Support | Example | Description |
 | :------| :------ | :------ | :------ |
-| set | ✅ | `await proxyObj.someValue;` | |
-| get | ✅ | `await (proxyObj.someValue = xxx);` | |
+| get | ✅ | `await proxyObj.someValue;` | |
+| set | ✅ | `await (proxyObj.someValue = xxx);` | |
 | apply | ✅ | `await proxyObj.applySomeMethod();` | |
 | construct | ✅ | `await new ProxyObj();` | |
 | proxy function | ✅ | `await proxyObj.applySomeMethod(comlink.proxy(() => {}));` | |
